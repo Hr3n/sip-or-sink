@@ -622,6 +622,127 @@
     .card-text { font-size: 1.05rem; }
     .card-emoji { font-size: 2.2rem; }
   }
+
+  /* ── BROWSE DECK MODAL ── */
+  .btn-browse {
+    background: none;
+    border: 1px solid rgba(180,74,255,.4);
+    color: var(--purple);
+    padding: .55rem 1.4rem;
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: .9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .2s, transform .15s, border-color .2s;
+  }
+  .btn-browse:hover { background: rgba(180,74,255,.1); transform: scale(1.04); border-color: var(--purple); }
+
+  .deck-modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background: rgba(0,0,0,.7);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    justify-content: center;
+    align-items: flex-start;
+    padding: 2rem 1rem;
+    overflow-y: auto;
+  }
+  .deck-modal-overlay.open { display: flex; }
+  .deck-modal {
+    background: var(--bg);
+    border: 1px solid rgba(180,74,255,.2);
+    border-radius: var(--radius);
+    width: 100%;
+    max-width: 520px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    animation: modalIn .3s ease;
+  }
+  @keyframes modalIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  .deck-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .deck-modal-header h2 { font-size: 1.2rem; font-weight: 700; }
+  .deck-modal-close {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    font-size: 1.5rem;
+    cursor: pointer;
+    line-height: 1;
+    padding: .2rem;
+    transition: color .2s;
+  }
+  .deck-modal-close:hover { color: var(--text); }
+  .deck-modal-tabs {
+    display: flex;
+    gap: .4rem;
+    background: var(--surface);
+    padding: .3rem;
+    border-radius: 10px;
+  }
+  .deck-tab {
+    flex: 1;
+    padding: .5rem;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-dim);
+    font-family: inherit;
+    font-size: .8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .2s, color .2s;
+  }
+  .deck-tab.active { background: var(--purple); color: #fff; }
+  .deck-tab:hover:not(.active) { color: var(--text); }
+  .deck-modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: .8rem;
+    max-height: 60vh;
+    overflow-y: auto;
+    padding-right: .3rem;
+  }
+  .deck-modal-body::-webkit-scrollbar { width: 4px; }
+  .deck-modal-body::-webkit-scrollbar-thumb { background: var(--purple); border-radius: 4px; }
+  .browse-cat-group {
+    background: var(--surface);
+    border-radius: 12px;
+    padding: .8rem;
+    border: 1px solid rgba(255,255,255,.04);
+  }
+  .browse-cat-title {
+    font-size: .75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: .5rem;
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+  }
+  .browse-cat-title .count {
+    font-weight: 400;
+    color: var(--text-dim);
+    font-size: .7rem;
+  }
+  .browse-card {
+    padding: .4rem 0;
+    font-size: .82rem;
+    color: var(--text-dim);
+    line-height: 1.5;
+    border-bottom: 1px solid rgba(255,255,255,.03);
+  }
+  .browse-card:last-child { border-bottom: none; }
 </style>
 </head>
 <body>
@@ -640,6 +761,23 @@
   </div>
   <div class="player-chips" id="player-chips"></div>
   <button class="btn-start" id="start-btn" disabled>Next →</button>
+  <button class="btn-browse" id="browse-btn" type="button">Browse Deck 👀</button>
+</div>
+
+<!-- BROWSE DECK MODAL -->
+<div class="deck-modal-overlay" id="deck-modal">
+  <div class="deck-modal">
+    <div class="deck-modal-header">
+      <h2>📋 All Cards</h2>
+      <button class="deck-modal-close" id="deck-modal-close" aria-label="Close">✕</button>
+    </div>
+    <div class="deck-modal-tabs">
+      <button class="deck-tab active" data-filter="all">All (60)</button>
+      <button class="deck-tab" data-filter="classic">Classic (30)</button>
+      <button class="deck-tab" data-filter="nsfw">NSFW (30)</button>
+    </div>
+    <div class="deck-modal-body" id="deck-modal-body"></div>
+  </div>
 </div>
 
 <!-- MODE SELECTION -->
@@ -841,6 +979,10 @@
   const addPlayerBtn   = $('add-player-btn');
   const playerChips    = $('player-chips');
   const startBtn       = $('start-btn');
+  const browseBtn      = $('browse-btn');
+  const deckModal      = $('deck-modal');
+  const deckModalClose = $('deck-modal-close');
+  const deckModalBody  = $('deck-modal-body');
   const modeClassic    = $('mode-classic');
   const modeNsfw       = $('mode-nsfw');
   const modeCustom     = $('mode-custom');
@@ -859,6 +1001,58 @@
   const replayBtn     = $('replay-btn');
   const progressFill  = $('progress-fill');
   const progressLabel = $('progress-label');
+
+  // ── BROWSE DECK MODAL ──
+  const CLASSIC_CATS = ['counting','voting','rules','rapidfire'];
+  let browseFilter = 'all';
+
+  function renderBrowseModal(filter) {
+    browseFilter = filter;
+    let cards;
+    if (filter === 'classic') cards = CARDS_CLASSIC;
+    else if (filter === 'nsfw') cards = CARDS_NSFW;
+    else cards = ALL_CARDS;
+
+    const groups = {};
+    cards.forEach(c => {
+      if (!groups[c.category]) groups[c.category] = [];
+      groups[c.category].push(c);
+    });
+
+    deckModalBody.innerHTML = '';
+    for (const [cat, list] of Object.entries(groups)) {
+      const catLabel = CATEGORY_LABEL[cat] || cat;
+      const catCss = CATEGORY_CSS[cat] || '';
+      const div = document.createElement('div');
+      div.className = 'browse-cat-group';
+      div.innerHTML = `
+        <div class="browse-cat-title ${catCss}">${catLabel} <span class="count">(${list.length})</span></div>
+        ${list.map(c => `<div class="browse-card">${c.emoji} ${c.text}</div>`).join('')}
+      `;
+      deckModalBody.appendChild(div);
+    }
+
+    // Update tab active state
+    deckModal.querySelectorAll('.deck-tab').forEach(t => {
+      t.classList.toggle('active', t.dataset.filter === filter);
+    });
+  }
+
+  browseBtn.addEventListener('click', () => {
+    renderBrowseModal('all');
+    deckModal.classList.add('open');
+  });
+
+  deckModalClose.addEventListener('click', () => deckModal.classList.remove('open'));
+  deckModal.addEventListener('click', (e) => {
+    if (e.target === deckModal) deckModal.classList.remove('open');
+  });
+
+  // Tab switching
+  deckModal.querySelector('.deck-modal-tabs').addEventListener('click', (e) => {
+    const tab = e.target.closest('.deck-tab');
+    if (tab) renderBrowseModal(tab.dataset.filter);
+  });
 
   // ── SETUP ──
   function addPlayer() {
