@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sip or Sink — The Drinking Card Game</title>
+<meta name="description" content="Sip or Sink: A fun party drinking card game. Draw cards, follow the rules, and try not to sink!">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0d0d1a;
+    --surface: #16162a;
+    --card-bg: #1e1e3a;
+    --purple: #b44aff;
+    --teal: #00e5c8;
+    --pink: #ff4a8d;
+    --gold: #ffc44a;
+    --text: #eaeaff;
+    --text-dim: #8888aa;
+    --radius: 20px;
+    --glow-purple: 0 0 30px rgba(180, 74, 255, .4);
+    --glow-teal: 0 0 30px rgba(0, 229, 200, .4);
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-x: hidden;
+    background-image:
+      radial-gradient(circle at 20% 80%, rgba(180,74,255,.08) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(0,229,200,.08) 0%, transparent 50%);
+  }
+
+  /* ── HEADER ── */
+  header {
+    text-align: center;
+    padding: 2rem 1rem 1rem;
+    width: 100%;
+  }
+  header h1 {
+    font-size: clamp(2rem, 6vw, 3.2rem);
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--purple), var(--teal));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -1px;
+  }
+  header p {
+    color: var(--text-dim);
+    font-size: .95rem;
+    margin-top: .3rem;
+  }
+
+  /* ── SETUP SCREEN ── */
+  #setup-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.2rem;
+    padding: 2rem 1.5rem;
+    max-width: 440px;
+    width: 100%;
+  }
+  #setup-screen h2 {
+    font-size: 1.4rem;
+    font-weight: 700;
+  }
+  .input-group {
+    width: 100%;
+    display: flex;
+    gap: .5rem;
+  }
+  .input-group input {
+    flex: 1;
+    padding: .75rem 1rem;
+    border-radius: 12px;
+    border: 1px solid rgba(180,74,255,.3);
+    background: var(--surface);
+    color: var(--text);
+    font-size: 1rem;
+    font-family: inherit;
+    outline: none;
+    transition: border-color .2s;
+  }
+  .input-group input:focus { border-color: var(--teal); }
+  .input-group button {
+    padding: .75rem 1.2rem;
+    border-radius: 12px;
+    border: none;
+    background: var(--purple);
+    color: #fff;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: transform .15s, box-shadow .2s;
+    font-size: 1rem;
+  }
+  .input-group button:hover { transform: scale(1.05); box-shadow: var(--glow-purple); }
+
+  .player-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+    justify-content: center;
+  }
+  .chip {
+    background: var(--surface);
+    border: 1px solid var(--purple);
+    padding: .4rem .9rem;
+    border-radius: 99px;
+    font-size: .85rem;
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+    animation: chipIn .3s ease;
+  }
+  .chip button {
+    background: none;
+    border: none;
+    color: var(--pink);
+    cursor: pointer;
+    font-size: 1rem;
+    line-height: 1;
+  }
+  @keyframes chipIn { from { opacity: 0; scale: .8; } to { opacity: 1; scale: 1; } }
+
+  .btn-start {
+    padding: .9rem 3rem;
+    border-radius: 14px;
+    border: none;
+    background: linear-gradient(135deg, var(--purple), var(--teal));
+    color: #fff;
+    font-size: 1.15rem;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: transform .15s, box-shadow .25s;
+    margin-top: .5rem;
+  }
+  .btn-start:hover { transform: scale(1.05); box-shadow: var(--glow-teal); }
+  .btn-start:disabled { opacity: .4; cursor: not-allowed; transform: none; box-shadow: none; }
+
+  /* ── GAME SCREEN ── */
+  #game-screen {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1rem 1.5rem 2rem;
+    width: 100%;
+    max-width: 480px;
+  }
+
+  /* Player banner */
+  .player-banner {
+    background: var(--surface);
+    border: 1px solid rgba(180,74,255,.25);
+    border-radius: 14px;
+    padding: .7rem 1.4rem;
+    text-align: center;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .player-banner .label { font-size: .8rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
+  .player-banner .name { font-size: 1.2rem; font-weight: 700; color: var(--teal); }
+  .player-banner .count { font-size: .8rem; color: var(--text-dim); }
+
+  /* Card */
+  .card-container {
+    perspective: 800px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+  .card {
+    width: 100%;
+    max-width: 360px;
+    min-height: 360px;
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: 2rem 1.8rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    gap: 1.2rem;
+    box-shadow:
+      0 8px 32px rgba(0,0,0,.5),
+      0 2px 8px rgba(0,0,0,.3),
+      inset 0 1px 0 rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.06);
+    position: relative;
+    overflow: hidden;
+    transition: transform .4s ease, opacity .4s ease;
+    transform: rotateY(0) scale(1);
+    opacity: 1;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    top: -1px; left: -1px; right: -1px; bottom: -1px;
+    border-radius: var(--radius);
+    padding: 1.5px;
+    background: linear-gradient(135deg, var(--purple), transparent 50%, var(--teal));
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+  .card.enter { animation: cardEnter .5s ease forwards; }
+  @keyframes cardEnter {
+    0% { opacity: 0; transform: rotateY(90deg) scale(.9); }
+    100% { opacity: 1; transform: rotateY(0) scale(1); }
+  }
+
+  .card-category {
+    font-size: .75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    padding: .3rem .9rem;
+    border-radius: 99px;
+  }
+  .cat-counting  { background: rgba(180,74,255,.2); color: var(--purple); }
+  .cat-voting    { background: rgba(0,229,200,.2); color: var(--teal); }
+  .cat-rules     { background: rgba(255,74,141,.2); color: var(--pink); }
+  .cat-rapidfire { background: rgba(255,196,74,.2); color: var(--gold); }
+
+  .card-emoji { font-size: 2.8rem; }
+  .card-text { font-size: 1.15rem; font-weight: 600; line-height: 1.5; color: var(--text); }
+
+  /* Waiting state */
+  .card.waiting {
+    background: linear-gradient(135deg, rgba(180,74,255,.08), rgba(0,229,200,.08));
+  }
+  .card.waiting .card-text { color: var(--text-dim); font-weight: 400; }
+
+  /* Buttons */
+  .game-actions {
+    display: flex;
+    gap: .8rem;
+    width: 100%;
+    max-width: 360px;
+  }
+  .btn-draw {
+    flex: 1;
+    padding: 1rem;
+    border-radius: 14px;
+    border: none;
+    background: linear-gradient(135deg, var(--purple), var(--teal));
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: transform .15s, box-shadow .25s;
+  }
+  .btn-draw:hover { transform: scale(1.04); box-shadow: var(--glow-teal); }
+  .btn-draw:active { transform: scale(.97); }
+
+  .btn-reset {
+    padding: 1rem 1.4rem;
+    border-radius: 14px;
+    border: 1px solid rgba(255,74,141,.4);
+    background: transparent;
+    color: var(--pink);
+    font-size: .95rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background .2s, transform .15s;
+  }
+  .btn-reset:hover { background: rgba(255,74,141,.1); transform: scale(1.04); }
+
+  /* Progress bar */
+  .progress-bar {
+    width: 100%;
+    max-width: 360px;
+    height: 6px;
+    background: var(--surface);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .progress-bar .fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--purple), var(--teal));
+    border-radius: 99px;
+    transition: width .4s ease;
+  }
+  .progress-label {
+    font-size: .75rem;
+    color: var(--text-dim);
+  }
+
+  /* End screen */
+  #end-screen {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 3rem 1.5rem;
+    text-align: center;
+  }
+  #end-screen h2 {
+    font-size: 2rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--purple), var(--teal));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  #end-screen p { color: var(--text-dim); }
+
+  /* Utilities */
+  .hidden { display: none !important; }
+
+  /* Mobile tweaks */
+  @media (max-width: 480px) {
+    .card { min-height: 300px; padding: 1.5rem 1.2rem; }
+    .card-text { font-size: 1.05rem; }
+    .card-emoji { font-size: 2.2rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🍻 Sip or Sink</h1>
+  <p>Draw a card. Follow the rules. Try not to sink.</p>
+</header>
+
+<!-- SETUP -->
+<div id="setup-screen">
+  <h2>Who's Playing?</h2>
+  <div class="input-group">
+    <input type="text" id="player-input" placeholder="Enter player name…" maxlength="20" aria-label="Player name">
+    <button id="add-player-btn" type="button">Add</button>
+  </div>
+  <div class="player-chips" id="player-chips"></div>
+  <button class="btn-start" id="start-btn" disabled>Start Game</button>
+</div>
+
+<!-- GAME -->
+<div id="game-screen">
+  <div class="player-banner">
+    <div>
+      <div class="label">Current Player</div>
+      <div class="name" id="current-player">—</div>
+    </div>
+    <div class="count" id="card-counter">0 / 0</div>
+  </div>
+
+  <div class="card-container">
+    <div class="card waiting" id="game-card">
+      <div class="card-emoji">🃏</div>
+      <div class="card-text">Tap <strong>Draw</strong> to begin!</div>
+    </div>
+  </div>
+
+  <div class="progress-bar"><div class="fill" id="progress-fill" style="width:0%"></div></div>
+  <div class="progress-label" id="progress-label">Cards remaining: —</div>
+
+  <div class="game-actions">
+    <button class="btn-draw" id="draw-btn">Draw Card</button>
+    <button class="btn-reset" id="reset-btn">Reset</button>
+  </div>
+</div>
+
+<!-- END -->
+<div id="end-screen">
+  <h2>🎉 All Cards Drawn!</h2>
+  <p>You survived the deck — or did the deck survive you?</p>
+  <button class="btn-start" id="replay-btn">Play Again</button>
+</div>
+
+<script>
+  // ── CARD DATA (30 cards) ──
+  const CARDS = [
+    // Counting (8)
+    { category: 'counting', emoji: '📱', text: 'Take 1 sip for every ex you still have on social media.' },
+    { category: 'counting', emoji: '📸', text: 'Take 1 sip for every selfie you took this week.' },
+    { category: 'counting', emoji: '🐶', text: "Take 1 sip for every pet you've owned in your life." },
+    { category: 'counting', emoji: '🌍', text: "Take 1 sip for every country you've visited." },
+    { category: 'counting', emoji: '💔', text: "Take 2 sips for every time you've been ghosted." },
+    { category: 'counting', emoji: '🍕', text: 'Take 1 sip for every time you ordered food this week.' },
+    { category: 'counting', emoji: '🚗', text: "Take 1 sip for every speeding ticket you've ever gotten." },
+    { category: 'counting', emoji: '🎓', text: "Take 1 sip for every school you've attended." },
+
+    // Voting (8)
+    { category: 'voting', emoji: '🚘', text: 'Everyone votes on who is the worst driver. That person takes 3 sips.' },
+    { category: 'voting', emoji: '😴', text: 'Vote: Who would sleep through their own wedding? That person drinks 2.' },
+    { category: 'voting', emoji: '🤥', text: 'Vote: Who is the worst liar? Loser takes 3 sips.' },
+    { category: 'voting', emoji: '📵', text: 'Vote: Who is most addicted to their phone? They drink 2.' },
+    { category: 'voting', emoji: '🧟', text: 'Vote: Who would survive the longest in a zombie apocalypse? Everyone ELSE drinks 2.' },
+    { category: 'voting', emoji: '👻', text: 'Vote: Who is most likely to ghost someone? That person takes 3 sips.' },
+    { category: 'voting', emoji: '🎤', text: 'Vote: Who has the worst singing voice? They must sing AND drink 2.' },
+    { category: 'voting', emoji: '🍳', text: 'Vote: Who is the worst cook? That person drinks 2.' },
+
+    // Rules (7)
+    { category: 'rules', emoji: '❓', text: 'You are now the "Question Master." If anyone answers a question you ask, they drink. Lasts until the next Rule card.' },
+    { category: 'rules', emoji: '🙅', text: 'No first names allowed! Anyone who uses a first name drinks 1. Lasts until the next Rule card.' },
+    { category: 'rules', emoji: '🦖', text: 'T-Rex Arms! You must keep your elbows tucked in. Break the rule? Drink 1. Lasts until the next Rule card.' },
+    { category: 'rules', emoji: '🤫', text: 'Silence! You cannot speak until the next card is drawn. If you talk, take 3 sips.' },
+    { category: 'rules', emoji: '👑', text: 'You are the Thumb Master. Whenever you place your thumb on the table, the last person to follow drinks 2.' },
+    { category: 'rules', emoji: '🪞', text: 'Mirror Rule! You must copy everything the player to your left does. Fail? Drink 2. Until next Rule card.' },
+    { category: 'rules', emoji: '🐍', text: 'Snake Eyes! You cannot make eye contact with anyone. If caught, drink 1. Until next Rule card.' },
+
+    // Rapid Fire (7)
+    { category: 'rapidfire', emoji: '🍕', text: 'Go around the circle naming pizza toppings. First to fail or repeat drinks.' },
+    { category: 'rapidfire', emoji: '🎬', text: 'Name movies with The Rock. Go around — hesitate or repeat and you drink 2.' },
+    { category: 'rapidfire', emoji: '🏙️', text: 'Name capital cities. First person to blank or repeat drinks 3.' },
+    { category: 'rapidfire', emoji: '🎵', text: 'Name one-hit wonders. Hesitate for more than 5 seconds? Drink 2.' },
+    { category: 'rapidfire', emoji: '🍺', text: 'Name beer brands. Go fast — first to stumble drinks 2.' },
+    { category: 'rapidfire', emoji: '📺', text: 'Name cartoon characters. Repeat or freeze? Take 2 sips.' },
+    { category: 'rapidfire', emoji: '🐾', text: 'Name animals that start with the letter B. Fail or repeat? Drink 2.' },
+  ];
+
+  const CATEGORY_CSS = {
+    counting:  'cat-counting',
+    voting:    'cat-voting',
+    rules:     'cat-rules',
+    rapidfire: 'cat-rapidfire',
+  };
+  const CATEGORY_LABEL = {
+    counting:  'Counting',
+    voting:    'Voting',
+    rules:     'Rules',
+    rapidfire: 'Rapid Fire',
+  };
+
+  // ── STATE ──
+  let players = [];
+  let currentPlayerIdx = 0;
+  let deck = [];
+  let drawnCount = 0;
+
+  // ── DOM ──
+  const $ = id => document.getElementById(id);
+  const setupScreen  = $('setup-screen');
+  const gameScreen   = $('game-screen');
+  const endScreen    = $('end-screen');
+  const playerInput  = $('player-input');
+  const addPlayerBtn = $('add-player-btn');
+  const playerChips  = $('player-chips');
+  const startBtn     = $('start-btn');
+  const currentPlayerEl = $('current-player');
+  const cardCounter  = $('card-counter');
+  const gameCard     = $('game-card');
+  const drawBtn      = $('draw-btn');
+  const resetBtn     = $('reset-btn');
+  const replayBtn    = $('replay-btn');
+  const progressFill = $('progress-fill');
+  const progressLabel = $('progress-label');
+
+  // ── SETUP ──
+  function addPlayer() {
+    const name = playerInput.value.trim();
+    if (!name || players.includes(name)) { playerInput.value = ''; return; }
+    players.push(name);
+    renderChips();
+    playerInput.value = '';
+    playerInput.focus();
+    startBtn.disabled = players.length < 2;
+  }
+
+  function removePlayer(name) {
+    players = players.filter(p => p !== name);
+    renderChips();
+    startBtn.disabled = players.length < 2;
+  }
+
+  function renderChips() {
+    playerChips.innerHTML = players.map(p =>
+      `<div class="chip">${p}<button onclick="removePlayer('${p.replace(/'/g, "\\'")}')" aria-label="Remove ${p}">✕</button></div>`
+    ).join('');
+  }
+
+  addPlayerBtn.addEventListener('click', addPlayer);
+  playerInput.addEventListener('keydown', e => { if (e.key === 'Enter') addPlayer(); });
+
+  // ── START GAME ──
+  function startGame() {
+    deck = shuffleDeck([...CARDS]);
+    drawnCount = 0;
+    currentPlayerIdx = 0;
+    setupScreen.style.display = 'none';
+    endScreen.style.display = 'none';
+    gameScreen.style.display = 'flex';
+    currentPlayerEl.textContent = players[currentPlayerIdx];
+    updateProgress();
+    // Reset card to waiting state
+    gameCard.className = 'card waiting';
+    gameCard.innerHTML = `<div class="card-emoji">🃏</div><div class="card-text">Tap <strong>Draw</strong> to begin!</div>`;
+  }
+
+  startBtn.addEventListener('click', startGame);
+
+  // ── DRAW ──
+  function drawCard() {
+    if (deck.length === 0) { showEnd(); return; }
+
+    const card = deck.pop();
+    drawnCount++;
+
+    // Animate
+    gameCard.classList.remove('enter');
+    // Force reflow
+    void gameCard.offsetWidth;
+
+    const catClass = CATEGORY_CSS[card.category];
+    const catLabel = CATEGORY_LABEL[card.category];
+
+    gameCard.className = 'card enter';
+    gameCard.innerHTML = `
+      <span class="card-category ${catClass}">${catLabel}</span>
+      <div class="card-emoji">${card.emoji}</div>
+      <div class="card-text">${card.text}</div>
+    `;
+
+    // Advance player
+    currentPlayerIdx = (currentPlayerIdx + 1) % players.length;
+    currentPlayerEl.textContent = players[currentPlayerIdx];
+
+    updateProgress();
+
+    if (deck.length === 0) {
+      drawBtn.textContent = 'Finish 🎉';
+    }
+  }
+
+  drawBtn.addEventListener('click', drawCard);
+
+  // ── PROGRESS ──
+  function updateProgress() {
+    const total = CARDS.length;
+    const pct = (drawnCount / total) * 100;
+    progressFill.style.width = pct + '%';
+    cardCounter.textContent = `${drawnCount} / ${total}`;
+    progressLabel.textContent = `Cards remaining: ${total - drawnCount}`;
+  }
+
+  // ── RESET ──
+  function resetGame() {
+    deck = shuffleDeck([...CARDS]);
+    drawnCount = 0;
+    currentPlayerIdx = 0;
+    currentPlayerEl.textContent = players[0];
+    drawBtn.textContent = 'Draw Card';
+    gameCard.className = 'card waiting';
+    gameCard.innerHTML = `<div class="card-emoji">🃏</div><div class="card-text">Deck reshuffled! Tap <strong>Draw</strong> to go again.</div>`;
+    updateProgress();
+  }
+
+  resetBtn.addEventListener('click', resetGame);
+
+  // ── END ──
+  function showEnd() {
+    gameScreen.style.display = 'none';
+    endScreen.style.display = 'flex';
+  }
+
+  replayBtn.addEventListener('click', () => {
+    endScreen.style.display = 'none';
+    gameScreen.style.display = 'flex';
+    resetGame();
+  });
+
+  // ── SHUFFLE (Fisher-Yates) ──
+  function shuffleDeck(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+</script>
+
+</body>
+</html>
