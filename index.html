@@ -20,12 +20,15 @@
     --gold: #ffc44a;
     --red: #ff3b3b;
     --orange: #ff8c42;
+    --cyan: #00d4ff;
+    --mint: #34d399;
     --text: #eaeaff;
     --text-dim: #8888aa;
     --radius: 20px;
     --glow-purple: 0 0 30px rgba(180, 74, 255, .4);
     --glow-teal: 0 0 30px rgba(0, 229, 200, .4);
     --glow-red: 0 0 30px rgba(255, 59, 59, .4);
+    --glow-cyan: 0 0 30px rgba(0, 212, 255, .4);
   }
 
   body {
@@ -238,6 +241,19 @@
     background: rgba(180,74,255,.08);
   }
 
+  .mode-card.party {
+    border-color: rgba(0,212,255,.3);
+  }
+  .mode-card.party:hover {
+    border-color: var(--cyan);
+    box-shadow: var(--glow-cyan);
+  }
+  .mode-card.party.selected {
+    border-color: var(--cyan);
+    box-shadow: var(--glow-cyan);
+    background: rgba(0,212,255,.08);
+  }
+
   .nsfw-warning {
     font-size: .75rem;
     color: var(--red);
@@ -268,6 +284,10 @@
     background: linear-gradient(135deg, var(--purple), var(--gold));
   }
   .btn-mode-start.custom-active:hover { box-shadow: var(--glow-purple); }
+  .btn-mode-start.party-active {
+    background: linear-gradient(135deg, var(--cyan), var(--mint));
+  }
+  .btn-mode-start.party-active:hover { box-shadow: var(--glow-cyan); }
   .btn-mode-back {
     background: none;
     border: 1px solid var(--text-dim);
@@ -513,6 +533,11 @@
   .cat-spicyvote   { background: rgba(255,74,141,.25); color: var(--pink); }
   .cat-challenges  { background: rgba(180,74,255,.2); color: var(--purple); }
   .cat-wildcard    { background: rgba(255,196,74,.25); color: var(--gold); }
+  /* Party categories */
+  .cat-icebreaker  { background: rgba(0,212,255,.2); color: var(--cyan); }
+  .cat-deeptalk    { background: rgba(52,211,153,.2); color: var(--mint); }
+  .cat-partydare   { background: rgba(255,196,74,.2); color: var(--gold); }
+  .cat-groupgame   { background: rgba(180,74,255,.2); color: var(--purple); }
 
   .card-emoji { font-size: 2.8rem; }
   .card-text { font-size: 1.15rem; font-weight: 600; line-height: 1.5; color: var(--text); }
@@ -536,6 +561,20 @@
   body.nsfw-mode .btn-draw:hover { box-shadow: var(--glow-red); }
   body.nsfw-mode .player-banner .name { color: var(--red); }
   body.nsfw-mode .player-banner { border-color: rgba(255,59,59,.25); }
+
+  /* Party mode theme */
+  body.party-mode .card::before {
+    background: linear-gradient(135deg, var(--cyan), transparent 50%, var(--mint));
+  }
+  body.party-mode .progress-bar .fill {
+    background: linear-gradient(90deg, var(--cyan), var(--mint));
+  }
+  body.party-mode .btn-draw {
+    background: linear-gradient(135deg, var(--cyan), var(--mint));
+  }
+  body.party-mode .btn-draw:hover { box-shadow: var(--glow-cyan); }
+  body.party-mode .player-banner .name { color: var(--cyan); }
+  body.party-mode .player-banner { border-color: rgba(0,212,255,.25); }
 
   /* Buttons */
   .game-actions {
@@ -772,9 +811,10 @@
       <button class="deck-modal-close" id="deck-modal-close" aria-label="Close">✕</button>
     </div>
     <div class="deck-modal-tabs">
-      <button class="deck-tab active" data-filter="all">All (60)</button>
-      <button class="deck-tab" data-filter="classic">Classic (30)</button>
-      <button class="deck-tab" data-filter="nsfw">NSFW (30)</button>
+      <button class="deck-tab active" data-filter="all">All</button>
+      <button class="deck-tab" data-filter="classic">Classic</button>
+      <button class="deck-tab" data-filter="nsfw">NSFW</button>
+      <button class="deck-tab" data-filter="party">Party</button>
     </div>
     <div class="deck-modal-body" id="deck-modal-body"></div>
   </div>
@@ -794,6 +834,11 @@
       <div class="mode-emoji">🔥</div>
       <div class="mode-title">NSFW</div>
       <div class="mode-desc">Spicy confessions, wild dares &amp; questions you'll regret. 18+ only.</div>
+    </div>
+    <div class="mode-card party" id="mode-party" tabindex="0">
+      <div class="mode-emoji">🤝</div>
+      <div class="mode-title">Get to Know</div>
+      <div class="mode-desc">Icebreakers, deep questions &amp; fun dares to bond with the group.</div>
     </div>
     <div class="mode-card custom" id="mode-custom" tabindex="0">
       <div class="mode-emoji">🛠️</div>
@@ -935,6 +980,47 @@
     { category: 'wildcard', emoji: '💣', text: "Body shot! Pick someone to take a body shot off of. Both refuse? Both chug." },
   ];
 
+  // ── GET TO KNOW THE PARTY (30 cards) ──
+  const CARDS_PARTY = [
+    // Icebreaker (8)
+    { category: 'icebreaker', emoji: '🌟', text: 'What is one thing on your bucket list you haven\'t told anyone about?' },
+    { category: 'icebreaker', emoji: '🎵', text: 'What song would play every time you walk into a room?' },
+    { category: 'icebreaker', emoji: '🏠', text: 'Describe your dream home in 3 words. Everyone guesses whose dream it matches.' },
+    { category: 'icebreaker', emoji: '✈️', text: 'If you could teleport anywhere right now, where would you go and why?' },
+    { category: 'icebreaker', emoji: '🎬', text: 'What movie or show have you rewatched the most? Take 1 sip per rewatch.' },
+    { category: 'icebreaker', emoji: '🚀', text: 'If you could have dinner with anyone, dead or alive, who would it be?' },
+    { category: 'icebreaker', emoji: '🍕', text: 'What is your go-to comfort food when you\'ve had a terrible day?' },
+    { category: 'icebreaker', emoji: '👶', text: 'What did you want to be when you were a kid? Take 1 sip if you actually became it.' },
+
+    // Deep Talk (8)
+    { category: 'deeptalk', emoji: '💭', text: 'What is the best advice you\'ve ever received? Share it with the group.' },
+    { category: 'deeptalk', emoji: '💔', text: 'What\'s a lesson you learned the hard way? Take 2 sips after sharing.' },
+    { category: 'deeptalk', emoji: '🌜', text: 'What keeps you up at night? Be honest. Group drinks 1 sip in solidarity.' },
+    { category: 'deeptalk', emoji: '✨', text: 'Name one thing about the person to your right that you genuinely admire.' },
+    { category: 'deeptalk', emoji: '📚', text: 'What\'s a book, quote, or lyric that changed how you see the world?' },
+    { category: 'deeptalk', emoji: '🧩', text: 'What\'s a skill you wish you had? The group votes who\'d be worst at it — they drink 2.' },
+    { category: 'deeptalk', emoji: '🌅', text: 'Describe your perfect day from morning to night in 30 seconds.' },
+    { category: 'deeptalk', emoji: '🔮', text: 'Where do you see yourself in 5 years? Everyone takes 1 sip if they have no clue either.' },
+
+    // Party Dare (7)
+    { category: 'partydare', emoji: '🎤', text: 'Sing the chorus of the last song you listened to. Group rates it — under 5/10? Drink 2.' },
+    { category: 'partydare', emoji: '🤳', text: 'Take a group photo right now with the silliest pose you can. Post it or drink 3.' },
+    { category: 'partydare', emoji: '💬', text: 'Give the player across from you the most genuine compliment you can think of.' },
+    { category: 'partydare', emoji: '🎭', text: 'Do your best impression of another player. If they can\'t guess who, drink 2.' },
+    { category: 'partydare', emoji: '🤝', text: 'Swap phones with the player to your left for 30 seconds. Both take 1 sip for courage.' },
+    { category: 'partydare', emoji: '💃', text: 'Teach the group a dance move. Everyone tries it — worst attempt drinks 2.' },
+    { category: 'partydare', emoji: '📝', text: 'Write a haiku about the person to your right. Read it aloud. They drink 1 sip of honor.' },
+
+    // Group Game (7)
+    { category: 'groupgame', emoji: '🎲', text: 'Two Truths & a Lie! Tell 3 things about yourself. Group guesses the lie. Wrong guessers drink 1.' },
+    { category: 'groupgame', emoji: '👀', text: 'Staring contest! Pick an opponent. Loser takes 2 sips.' },
+    { category: 'groupgame', emoji: '⌛', text: '60-Second Story: Make up a story together — each person adds one sentence. Worst addition drinks 2.' },
+    { category: 'groupgame', emoji: '🎯', text: 'Category: Things you\'d bring to a deserted island. Go around — first to repeat or blank drinks 2.' },
+    { category: 'groupgame', emoji: '🧠', text: 'Would You Rather: Come up with a dilemma. The minority group drinks 2.' },
+    { category: 'groupgame', emoji: '🎨', text: 'Draw the player to your left using your non-dominant hand. They rate it — under 3/10? You drink 3.' },
+    { category: 'groupgame', emoji: '🔗', text: 'Word chain! Start with any word. Next person says a word starting with the last letter. Fail? Drink 2.' },
+  ];
+
   const CATEGORY_CSS = {
     counting:    'cat-counting',
     voting:      'cat-voting',
@@ -945,6 +1031,10 @@
     spicyvote:   'cat-spicyvote',
     challenges:  'cat-challenges',
     wildcard:    'cat-wildcard',
+    icebreaker:  'cat-icebreaker',
+    deeptalk:    'cat-deeptalk',
+    partydare:   'cat-partydare',
+    groupgame:   'cat-groupgame',
   };
   const CATEGORY_LABEL = {
     counting:    'Counting',
@@ -956,6 +1046,10 @@
     spicyvote:   'Spicy Vote',
     challenges:  'Challenge',
     wildcard:    'Wildcard',
+    icebreaker:  'Icebreaker',
+    deeptalk:    'Deep Talk',
+    partydare:   'Party Dare',
+    groupgame:   'Group Game',
   };
 
   // ── STATE ──
@@ -966,7 +1060,7 @@
   let selectedMode = 'classic';
   let activeCards = CARDS_CLASSIC;
   let customSelected = new Set(); // indices into ALL_CARDS
-  const ALL_CARDS = [...CARDS_CLASSIC, ...CARDS_NSFW];
+  const ALL_CARDS = [...CARDS_CLASSIC, ...CARDS_NSFW, ...CARDS_PARTY];
 
   // ── DOM ──
   const $ = id => document.getElementById(id);
@@ -985,6 +1079,7 @@
   const deckModalBody  = $('deck-modal-body');
   const modeClassic    = $('mode-classic');
   const modeNsfw       = $('mode-nsfw');
+  const modeParty      = $('mode-party');
   const modeCustom     = $('mode-custom');
   const nsfwWarning    = $('nsfw-warning');
   const modeStartBtn   = $('mode-start-btn');
@@ -1011,6 +1106,7 @@
     let cards;
     if (filter === 'classic') cards = CARDS_CLASSIC;
     else if (filter === 'nsfw') cards = CARDS_NSFW;
+    else if (filter === 'party') cards = CARDS_PARTY;
     else cards = ALL_CARDS;
 
     const groups = {};
@@ -1091,9 +1187,10 @@
     selectedMode = mode;
     modeClassic.classList.remove('selected');
     modeNsfw.classList.remove('selected');
+    modeParty.classList.remove('selected');
     modeCustom.classList.remove('selected');
     nsfwWarning.style.display = 'none';
-    modeStartBtn.classList.remove('nsfw-active', 'custom-active');
+    modeStartBtn.classList.remove('nsfw-active', 'custom-active', 'party-active');
 
     if (mode === 'classic') {
       modeClassic.classList.add('selected');
@@ -1103,6 +1200,10 @@
       nsfwWarning.style.display = 'block';
       modeStartBtn.classList.add('nsfw-active');
       modeStartBtn.textContent = 'Start Game 🔥';
+    } else if (mode === 'party') {
+      modeParty.classList.add('selected');
+      modeStartBtn.classList.add('party-active');
+      modeStartBtn.textContent = 'Start Game 🤝';
     } else {
       modeCustom.classList.add('selected');
       modeStartBtn.classList.add('custom-active');
@@ -1112,6 +1213,7 @@
 
   modeClassic.addEventListener('click', () => selectMode('classic'));
   modeNsfw.addEventListener('click', () => selectMode('nsfw'));
+  modeParty.addEventListener('click', () => selectMode('party'));
   modeCustom.addEventListener('click', () => selectMode('custom'));
 
   modeBackBtn.addEventListener('click', () => {
@@ -1219,7 +1321,8 @@
 
   // ── START GAME ──
   function startGame() {
-    activeCards = selectedMode === 'nsfw' ? CARDS_NSFW : CARDS_CLASSIC;
+    const DECK_MAP = { classic: CARDS_CLASSIC, nsfw: CARDS_NSFW, party: CARDS_PARTY };
+    activeCards = DECK_MAP[selectedMode] || CARDS_CLASSIC;
     modeScreen.style.display = 'none';
     launchGame();
   }
@@ -1229,16 +1332,19 @@
     drawnCount = 0;
     currentPlayerIdx = 0;
 
-    // Toggle NSFW body theme
+    // Toggle body theme classes
     const hasNsfw = activeCards.some(c => ['confessions','dares','spicyvote','challenges','wildcard'].includes(c.category));
-    document.body.classList.toggle('nsfw-mode', hasNsfw && selectedMode !== 'classic');
+    const hasParty = activeCards.some(c => ['icebreaker','deeptalk','partydare','groupgame'].includes(c.category));
+    document.body.classList.toggle('nsfw-mode', hasNsfw && selectedMode !== 'classic' && selectedMode !== 'party');
+    document.body.classList.toggle('party-mode', selectedMode === 'party' || (hasParty && !hasNsfw && selectedMode === 'custom'));
 
     endScreen.style.display = 'none';
     gameScreen.style.display = 'flex';
     currentPlayerEl.textContent = players[currentPlayerIdx];
     updateProgress();
     // Reset card to waiting state
-    const emoji = selectedMode === 'nsfw' ? '🔥' : selectedMode === 'custom' ? '🛠️' : '🃏';
+    const EMOJI_MAP = { nsfw: '🔥', custom: '🛠️', party: '🤝' };
+    const emoji = EMOJI_MAP[selectedMode] || '🃏';
     gameCard.className = 'card waiting';
     gameCard.innerHTML = `<div class="card-emoji">${emoji}</div><div class="card-text">Tap <strong>Draw</strong> to begin!</div>`;
   }
@@ -1295,7 +1401,7 @@
     currentPlayerEl.textContent = players[0];
     drawBtn.textContent = 'Draw Card';
     gameCard.className = 'card waiting';
-    const emoji = selectedMode === 'nsfw' ? '🔥' : selectedMode === 'custom' ? '🛠️' : '🃏';
+    const emoji = ({ nsfw: '🔥', custom: '🛠️', party: '🤝' })[selectedMode] || '🃏';
     gameCard.innerHTML = `<div class="card-emoji">${emoji}</div><div class="card-text">Deck reshuffled! Tap <strong>Draw</strong> to go again.</div>`;
     updateProgress();
   }
