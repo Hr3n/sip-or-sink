@@ -25,10 +25,14 @@
     --text: #eaeaff;
     --text-dim: #8888aa;
     --radius: 20px;
+    --amber: #f59e0b;
+    --lime: #84cc16;
     --glow-purple: 0 0 30px rgba(180, 74, 255, .4);
     --glow-teal: 0 0 30px rgba(0, 229, 200, .4);
     --glow-red: 0 0 30px rgba(255, 59, 59, .4);
     --glow-cyan: 0 0 30px rgba(0, 212, 255, .4);
+    --glow-amber: 0 0 30px rgba(245, 158, 11, .4);
+    --glow-lime: 0 0 30px rgba(132, 204, 22, .4);
   }
 
   body {
@@ -254,6 +258,32 @@
     background: rgba(0,212,255,.08);
   }
 
+  .mode-card.drinking {
+    border-color: rgba(245,158,11,.3);
+  }
+  .mode-card.drinking:hover {
+    border-color: var(--amber);
+    box-shadow: var(--glow-amber);
+  }
+  .mode-card.drinking.selected {
+    border-color: var(--amber);
+    box-shadow: var(--glow-amber);
+    background: rgba(245,158,11,.08);
+  }
+
+  .mode-card.wordmaster {
+    border-color: rgba(132,204,22,.3);
+  }
+  .mode-card.wordmaster:hover {
+    border-color: var(--lime);
+    box-shadow: var(--glow-lime);
+  }
+  .mode-card.wordmaster.selected {
+    border-color: var(--lime);
+    box-shadow: var(--glow-lime);
+    background: rgba(132,204,22,.08);
+  }
+
   .nsfw-warning {
     font-size: .75rem;
     color: var(--red);
@@ -288,6 +318,14 @@
     background: linear-gradient(135deg, var(--cyan), var(--mint));
   }
   .btn-mode-start.party-active:hover { box-shadow: var(--glow-cyan); }
+  .btn-mode-start.drinking-active {
+    background: linear-gradient(135deg, var(--amber), var(--orange));
+  }
+  .btn-mode-start.drinking-active:hover { box-shadow: var(--glow-amber); }
+  .btn-mode-start.wordmaster-active {
+    background: linear-gradient(135deg, var(--lime), var(--teal));
+  }
+  .btn-mode-start.wordmaster-active:hover { box-shadow: var(--glow-lime); }
   .btn-mode-back {
     background: none;
     border: 1px solid var(--text-dim);
@@ -538,6 +576,11 @@
   .cat-deeptalk    { background: rgba(52,211,153,.2); color: var(--mint); }
   .cat-partydare   { background: rgba(255,196,74,.2); color: var(--gold); }
   .cat-groupgame   { background: rgba(180,74,255,.2); color: var(--purple); }
+  /* Drinking categories */
+  .cat-waterfall   { background: rgba(245,158,11,.2); color: var(--amber); }
+  .cat-chug        { background: rgba(255,140,66,.2); color: var(--orange); }
+  .cat-shotroule   { background: rgba(255,59,59,.2); color: var(--red); }
+  .cat-penalty     { background: rgba(255,196,74,.2); color: var(--gold); }
 
   .card-emoji { font-size: 2.8rem; }
   .card-text { font-size: 1.15rem; font-weight: 600; line-height: 1.5; color: var(--text); }
@@ -575,6 +618,166 @@
   body.party-mode .btn-draw:hover { box-shadow: var(--glow-cyan); }
   body.party-mode .player-banner .name { color: var(--cyan); }
   body.party-mode .player-banner { border-color: rgba(0,212,255,.25); }
+
+  /* Drinking mode theme */
+  body.drinking-mode .card::before {
+    background: linear-gradient(135deg, var(--amber), transparent 50%, var(--orange));
+  }
+  body.drinking-mode .progress-bar .fill {
+    background: linear-gradient(90deg, var(--amber), var(--orange));
+  }
+  body.drinking-mode .btn-draw {
+    background: linear-gradient(135deg, var(--amber), var(--orange));
+  }
+  body.drinking-mode .btn-draw:hover { box-shadow: var(--glow-amber); }
+  body.drinking-mode .player-banner .name { color: var(--amber); }
+  body.drinking-mode .player-banner { border-color: rgba(245,158,11,.25); }
+
+  /* ── WORD MASTER SCREEN ── */
+  #wm-screen {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.2rem;
+    padding: 1rem 1.5rem 2rem;
+    width: 100%;
+    max-width: 480px;
+  }
+  .wm-header {
+    width: 100%;
+    text-align: center;
+  }
+  .wm-header h2 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--lime);
+  }
+  .wm-round-info {
+    font-size: .85rem;
+    color: var(--text-dim);
+    margin-top: .3rem;
+  }
+  .wm-word-area {
+    width: 100%;
+    max-width: 360px;
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: 2rem;
+    text-align: center;
+    border: 1px solid rgba(132,204,22,.15);
+    position: relative;
+    min-height: 160px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: .8rem;
+  }
+  .wm-secret-label {
+    font-size: .7rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--text-dim);
+  }
+  .wm-secret-word {
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--lime);
+    letter-spacing: 2px;
+    filter: blur(14px);
+    transition: filter .3s;
+    user-select: none;
+    cursor: pointer;
+  }
+  .wm-secret-word.revealed { filter: blur(0); }
+  .wm-reveal-hint {
+    font-size: .7rem;
+    color: var(--text-dim);
+  }
+  .wm-clues {
+    width: 100%;
+    max-width: 360px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: .4rem;
+    justify-content: center;
+    min-height: 32px;
+  }
+  .wm-clue-chip {
+    background: var(--surface);
+    border: 1px solid rgba(132,204,22,.3);
+    color: var(--lime);
+    padding: .3rem .8rem;
+    border-radius: 99px;
+    font-size: .85rem;
+    font-weight: 600;
+    animation: chipIn .3s ease;
+  }
+  .wm-sip-counter {
+    width: 100%;
+    max-width: 360px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--surface);
+    border-radius: 12px;
+    padding: .6rem 1rem;
+    border: 1px solid rgba(132,204,22,.15);
+  }
+  .wm-sip-counter .label { font-size: .8rem; color: var(--text-dim); }
+  .wm-sip-counter .sips { font-size: 1.2rem; font-weight: 700; color: var(--amber); }
+  .wm-player-turn {
+    background: var(--surface);
+    border: 1px solid rgba(132,204,22,.25);
+    border-radius: 14px;
+    padding: .6rem 1.2rem;
+    text-align: center;
+    width: 100%;
+    max-width: 360px;
+  }
+  .wm-player-turn .label { font-size: .7rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
+  .wm-player-turn .name { font-size: 1.1rem; font-weight: 700; color: var(--lime); }
+  .wm-actions {
+    display: flex;
+    gap: .6rem;
+    width: 100%;
+    max-width: 360px;
+    flex-wrap: wrap;
+  }
+  .wm-btn {
+    flex: 1;
+    min-width: 140px;
+    padding: .85rem;
+    border-radius: 14px;
+    border: none;
+    font-family: inherit;
+    font-size: .95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform .15s, box-shadow .2s;
+  }
+  .wm-btn:hover { transform: scale(1.04); }
+  .wm-btn-wrong {
+    background: linear-gradient(135deg, var(--red), var(--orange));
+    color: #fff;
+  }
+  .wm-btn-wrong:hover { box-shadow: var(--glow-red); }
+  .wm-btn-correct {
+    background: linear-gradient(135deg, var(--lime), var(--teal));
+    color: #fff;
+  }
+  .wm-btn-correct:hover { box-shadow: var(--glow-lime); }
+  .wm-btn-next {
+    background: linear-gradient(135deg, var(--purple), var(--lime));
+    color: #fff;
+  }
+  .wm-btn-next:hover { box-shadow: var(--glow-purple); }
+  .wm-btn-quit {
+    background: transparent;
+    border: 1px solid var(--text-dim);
+    color: var(--text-dim);
+  }
+  .wm-btn-quit:hover { border-color: var(--text); color: var(--text); }
 
   /* Buttons */
   .game-actions {
@@ -815,6 +1018,7 @@
       <button class="deck-tab" data-filter="classic">Classic</button>
       <button class="deck-tab" data-filter="nsfw">NSFW</button>
       <button class="deck-tab" data-filter="party">Party</button>
+      <button class="deck-tab" data-filter="drinking">Chug</button>
     </div>
     <div class="deck-modal-body" id="deck-modal-body"></div>
   </div>
@@ -840,6 +1044,16 @@
       <div class="mode-title">Get to Know</div>
       <div class="mode-desc">Icebreakers, deep questions &amp; fun dares to bond with the group.</div>
     </div>
+    <div class="mode-card drinking" id="mode-drinking" tabindex="0">
+      <div class="mode-emoji">🍺</div>
+      <div class="mode-title">Chug Zone</div>
+      <div class="mode-desc">Waterfall, chugs, shot roulette &amp; heavy penalties. Drink up!</div>
+    </div>
+    <div class="mode-card wordmaster" id="mode-wordmaster" tabindex="0">
+      <div class="mode-emoji">🧠</div>
+      <div class="mode-title">Word Master</div>
+      <div class="mode-desc">Gamemaster describes a word. Wrong guesses = everyone sips!</div>
+    </div>
     <div class="mode-card custom" id="mode-custom" tabindex="0">
       <div class="mode-emoji">🛠️</div>
       <div class="mode-title">Custom</div>
@@ -849,6 +1063,34 @@
   <div class="nsfw-warning" id="nsfw-warning" style="display:none">⚠️ Contains adult content. Make sure everyone is comfortable!</div>
   <button class="btn-mode-start" id="mode-start-btn">Start Game 🎴</button>
   <button class="btn-mode-back" id="mode-back-btn">← Back to Players</button>
+</div>
+
+<!-- WORD MASTER -->
+<div id="wm-screen">
+  <div class="wm-header">
+    <h2>🧠 Word Master</h2>
+    <div class="wm-round-info" id="wm-round-info">Round 1 / 5</div>
+  </div>
+  <div class="wm-player-turn">
+    <div class="label">Gamemaster</div>
+    <div class="name" id="wm-gm-name">—</div>
+  </div>
+  <div class="wm-word-area" id="wm-word-area">
+    <div class="wm-secret-label">Secret Word</div>
+    <div class="wm-secret-word" id="wm-secret-word" title="Hold to reveal">—</div>
+    <div class="wm-reveal-hint">Tap &amp; hold to peek</div>
+  </div>
+  <div class="wm-clues" id="wm-clues"></div>
+  <div class="wm-sip-counter">
+    <span class="label">Total sips this round</span>
+    <span class="sips" id="wm-sips">0</span>
+  </div>
+  <div class="wm-actions">
+    <button class="wm-btn wm-btn-wrong" id="wm-wrong-btn">❌ Wrong Guess (+1 sip each)</button>
+    <button class="wm-btn wm-btn-correct" id="wm-correct-btn">✅ Correct!</button>
+    <button class="wm-btn wm-btn-next" id="wm-next-btn">🎲 Next Word</button>
+    <button class="wm-btn wm-btn-quit" id="wm-quit-btn">← Back to Modes</button>
+  </div>
 </div>
 
 <!-- DECK BUILDER -->
@@ -1021,6 +1263,58 @@
     { category: 'groupgame', emoji: '🔗', text: 'Word chain! Start with any word. Next person says a word starting with the last letter. Fail? Drink 2.' },
   ];
 
+  // ── CHUG ZONE (30 cards) ──
+  const CARDS_DRINKING = [
+    // Waterfall (8)
+    { category: 'waterfall', emoji: '🌊', text: 'WATERFALL! Everyone starts drinking. You can only stop when the person before you stops.' },
+    { category: 'waterfall', emoji: '⬇️', text: 'Reverse Waterfall! Start from the youngest player. Same rules — can\'t stop until the person after you does.' },
+    { category: 'waterfall', emoji: '🔄', text: 'Cascade! Go around twice — each person drinks for 5 seconds, no stopping.' },
+    { category: 'waterfall', emoji: '💧', text: 'Drip Drop! Everyone takes 1 sip, then 2, then 3. First to quit takes 5 more.' },
+    { category: 'waterfall', emoji: '🏄', text: 'Tidal Wave! Everyone chugs for 10 seconds straight. Last to put their drink down drinks 3 more.' },
+    { category: 'waterfall', emoji: '🚿', text: 'Shower Round! Person to your left pours your drink into your mouth for 3 seconds.' },
+    { category: 'waterfall', emoji: '🌀', text: 'Whirlpool! Everyone passes their drink to the right and chugs for 5 seconds.' },
+    { category: 'waterfall', emoji: '🫗', text: 'Overflow! Fill your glass to the brim. Drink until it\'s half empty. Spill any? Start over.' },
+
+    // Chug (8)
+    { category: 'chug', emoji: '🍺', text: 'CHUG! Finish your entire drink right now. No excuses.' },
+    { category: 'chug', emoji: '⏱️', text: 'Speed Chug! Race the player across from you. Loser takes 3 more sips.' },
+    { category: 'chug', emoji: '🏆', text: 'Chug Champion! Everyone chugs. Last to finish drinks another full glass.' },
+    { category: 'chug', emoji: '🎯', text: 'Bullseye Chug! Close your eyes and take exactly 5 sips. Over or under? Drink the difference x2.' },
+    { category: 'chug', emoji: '🤝', text: 'Buddy Chug! Pick a partner. You both chug together. If one stops, both drink 3 more.' },
+    { category: 'chug', emoji: '⚡', text: 'Lightning Chug! Take 7 sips as fast as humanly possible.' },
+    { category: 'chug', emoji: '🪣', text: 'Refill & Chug! Top off your drink, then chug half of it immediately.' },
+    { category: 'chug', emoji: '🥊', text: 'Chug Duel! Challenge anyone. Both chug. Loser does a dare chosen by the winner.' },
+
+    // Shot Roulette (7)
+    { category: 'shotroule', emoji: '🎰', text: 'Shot Roulette! Everyone holds up fingers 1-5. Whoever matches the majority takes a shot.' },
+    { category: 'shotroule', emoji: '🎲', text: 'Dice Roll! Roll an imaginary die (pick 1-6). If you match another player, you both take a shot.' },
+    { category: 'shotroule', emoji: '🃏', text: 'Russian Roulette! Everyone picks a number 1-6. The drawer picks one — that person takes a shot.' },
+    { category: 'shotroule', emoji: '🔮', text: 'Fortune Shot! Predict who will be the drunkest tonight. If the group agrees, they take a shot now.' },
+    { category: 'shotroule', emoji: '💀', text: 'Death Shot! Last person to touch their nose takes a shot immediately.' },
+    { category: 'shotroule', emoji: '🎪', text: 'Circus Shot! Do a trick (card trick, coin flip, joke). If the group boos, take a shot.' },
+    { category: 'shotroule', emoji: '🫡', text: 'Salute & Shoot! Stand up, salute the group, and take a shot. Refuse? Double shot.' },
+
+    // Penalty (7)
+    { category: 'penalty', emoji: '📵', text: 'Phone Penalty! Check your screen time. Drink 1 sip per hour of daily average.' },
+    { category: 'penalty', emoji: '🚫', text: 'No Hands! Drink your next 3 sips without using your hands. Spill? Start over + 3 more.' },
+    { category: 'penalty', emoji: '🤐', text: 'Silent Penalty! You cannot talk for 2 minutes. Every word = 2 sips.' },
+    { category: 'penalty', emoji: '🧊', text: 'Ice Penalty! Hold an ice cube in your hand until it melts. Drop it? Chug for 5 seconds.' },
+    { category: 'penalty', emoji: '👑', text: 'Crown Penalty! The group votes — the "king" must drink everyone else\'s sip count combined.' },
+    { category: 'penalty', emoji: '🔢', text: 'Count Penalty! Count to 20. Every 3rd number, take a sip instead of saying it.' },
+    { category: 'penalty', emoji: '🎭', text: 'Accent Penalty! Speak in an accent for 3 minutes. Break character? 3 sips each time.' },
+  ];
+
+  // ── WORD MASTER WORD BANK ──
+  const WORDS = [
+    'Elephant','Pizza','Sunset','Guitar','Pirate','Volcano','Penguin','Skateboard',
+    'Helicopter','Moustache','Fireworks','Astronaut','Pancake','Tornado','Surfboard',
+    'Kangaroo','Pineapple','Lighthouse','Dinosaur','Snowflake','Microphone','Hammock',
+    'Sunflower','Backpack','Waterfall','Rollercoaster','Popcorn','Telescope','Igloo',
+    'Flamingo','Cactus','Mermaid','Treasure','Rainbow','Motorcycle','Jellyfish',
+    'Bulldozer','Campfire','Parachute','Sphinx','Trampoline','Origami','Coconut',
+    'Avalanche','Lemonade','Starfish','Cucumber','Jackhammer','Sombrero','Catapult',
+  ];
+
   const CATEGORY_CSS = {
     counting:    'cat-counting',
     voting:      'cat-voting',
@@ -1035,6 +1329,10 @@
     deeptalk:    'cat-deeptalk',
     partydare:   'cat-partydare',
     groupgame:   'cat-groupgame',
+    waterfall:   'cat-waterfall',
+    chug:        'cat-chug',
+    shotroule:   'cat-shotroule',
+    penalty:     'cat-penalty',
   };
   const CATEGORY_LABEL = {
     counting:    'Counting',
@@ -1050,6 +1348,10 @@
     deeptalk:    'Deep Talk',
     partydare:   'Party Dare',
     groupgame:   'Group Game',
+    waterfall:   'Waterfall',
+    chug:        'Chug',
+    shotroule:   'Shot Roulette',
+    penalty:     'Penalty',
   };
 
   // ── STATE ──
@@ -1059,8 +1361,8 @@
   let drawnCount = 0;
   let selectedMode = 'classic';
   let activeCards = CARDS_CLASSIC;
-  let customSelected = new Set(); // indices into ALL_CARDS
-  const ALL_CARDS = [...CARDS_CLASSIC, ...CARDS_NSFW, ...CARDS_PARTY];
+  let customSelected = new Set();
+  const ALL_CARDS = [...CARDS_CLASSIC, ...CARDS_NSFW, ...CARDS_PARTY, ...CARDS_DRINKING];
 
   // ── DOM ──
   const $ = id => document.getElementById(id);
@@ -1080,6 +1382,8 @@
   const modeClassic    = $('mode-classic');
   const modeNsfw       = $('mode-nsfw');
   const modeParty      = $('mode-party');
+  const modeDrinking   = $('mode-drinking');
+  const modeWordmaster = $('mode-wordmaster');
   const modeCustom     = $('mode-custom');
   const nsfwWarning    = $('nsfw-warning');
   const modeStartBtn   = $('mode-start-btn');
@@ -1096,6 +1400,18 @@
   const replayBtn     = $('replay-btn');
   const progressFill  = $('progress-fill');
   const progressLabel = $('progress-label');
+  // Word Master DOM
+  const wmScreen    = $('wm-screen');
+  const wmRoundInfo = $('wm-round-info');
+  const wmGmName    = $('wm-gm-name');
+  const wmSecretWord = $('wm-secret-word');
+  const wmClues     = $('wm-clues');
+  const wmSips      = $('wm-sips');
+  const wmWrongBtn  = $('wm-wrong-btn');
+  const wmCorrectBtn = $('wm-correct-btn');
+  const wmNextBtn   = $('wm-next-btn');
+  const wmQuitBtn   = $('wm-quit-btn');
+  const wmWordArea  = $('wm-word-area');
 
   // ── BROWSE DECK MODAL ──
   const CLASSIC_CATS = ['counting','voting','rules','rapidfire'];
@@ -1107,6 +1423,7 @@
     if (filter === 'classic') cards = CARDS_CLASSIC;
     else if (filter === 'nsfw') cards = CARDS_NSFW;
     else if (filter === 'party') cards = CARDS_PARTY;
+    else if (filter === 'drinking') cards = CARDS_DRINKING;
     else cards = ALL_CARDS;
 
     const groups = {};
@@ -1183,38 +1500,31 @@
   });
 
   // ── MODE SELECTION ──
+  const ALL_MODES = ['classic','nsfw','party','drinking','wordmaster','custom'];
+  const MODE_ELS = { classic: modeClassic, nsfw: modeNsfw, party: modeParty, drinking: modeDrinking, wordmaster: modeWordmaster, custom: modeCustom };
+
   function selectMode(mode) {
     selectedMode = mode;
-    modeClassic.classList.remove('selected');
-    modeNsfw.classList.remove('selected');
-    modeParty.classList.remove('selected');
-    modeCustom.classList.remove('selected');
+    ALL_MODES.forEach(m => MODE_ELS[m].classList.remove('selected'));
+    MODE_ELS[mode].classList.add('selected');
     nsfwWarning.style.display = 'none';
-    modeStartBtn.classList.remove('nsfw-active', 'custom-active', 'party-active');
+    modeStartBtn.classList.remove('nsfw-active','custom-active','party-active','drinking-active','wordmaster-active');
 
-    if (mode === 'classic') {
-      modeClassic.classList.add('selected');
-      modeStartBtn.textContent = 'Start Game 🎴';
-    } else if (mode === 'nsfw') {
-      modeNsfw.classList.add('selected');
-      nsfwWarning.style.display = 'block';
-      modeStartBtn.classList.add('nsfw-active');
-      modeStartBtn.textContent = 'Start Game 🔥';
-    } else if (mode === 'party') {
-      modeParty.classList.add('selected');
-      modeStartBtn.classList.add('party-active');
-      modeStartBtn.textContent = 'Start Game 🤝';
-    } else {
-      modeCustom.classList.add('selected');
-      modeStartBtn.classList.add('custom-active');
-      modeStartBtn.textContent = 'Build Deck 🛠️';
-    }
+    const btnMap = {
+      classic:    ['Start Game 🎴', ''],
+      nsfw:       ['Start Game 🔥', 'nsfw-active'],
+      party:      ['Start Game 🤝', 'party-active'],
+      drinking:   ['Start Game 🍺', 'drinking-active'],
+      wordmaster: ['Start Game 🧠', 'wordmaster-active'],
+      custom:     ['Build Deck 🛠️', 'custom-active'],
+    };
+    const [label, cls] = btnMap[mode];
+    modeStartBtn.textContent = label;
+    if (cls) modeStartBtn.classList.add(cls);
+    if (mode === 'nsfw') nsfwWarning.style.display = 'block';
   }
 
-  modeClassic.addEventListener('click', () => selectMode('classic'));
-  modeNsfw.addEventListener('click', () => selectMode('nsfw'));
-  modeParty.addEventListener('click', () => selectMode('party'));
-  modeCustom.addEventListener('click', () => selectMode('custom'));
+  ALL_MODES.forEach(m => MODE_ELS[m].addEventListener('click', () => selectMode(m)));
 
   modeBackBtn.addEventListener('click', () => {
     modeScreen.style.display = 'none';
@@ -1227,6 +1537,9 @@
       modeScreen.style.display = 'none';
       renderBuilder();
       builderScreen.style.display = 'flex';
+    } else if (selectedMode === 'wordmaster') {
+      modeScreen.style.display = 'none';
+      startWordMaster();
     } else {
       startGame();
     }
@@ -1321,10 +1634,14 @@
 
   // ── START GAME ──
   function startGame() {
-    const DECK_MAP = { classic: CARDS_CLASSIC, nsfw: CARDS_NSFW, party: CARDS_PARTY };
+    const DECK_MAP = { classic: CARDS_CLASSIC, nsfw: CARDS_NSFW, party: CARDS_PARTY, drinking: CARDS_DRINKING };
     activeCards = DECK_MAP[selectedMode] || CARDS_CLASSIC;
     modeScreen.style.display = 'none';
     launchGame();
+  }
+
+  function clearBodyModes() {
+    document.body.classList.remove('nsfw-mode','party-mode','drinking-mode');
   }
 
   function launchGame() {
@@ -1333,21 +1650,96 @@
     currentPlayerIdx = 0;
 
     // Toggle body theme classes
+    clearBodyModes();
     const hasNsfw = activeCards.some(c => ['confessions','dares','spicyvote','challenges','wildcard'].includes(c.category));
     const hasParty = activeCards.some(c => ['icebreaker','deeptalk','partydare','groupgame'].includes(c.category));
-    document.body.classList.toggle('nsfw-mode', hasNsfw && selectedMode !== 'classic' && selectedMode !== 'party');
-    document.body.classList.toggle('party-mode', selectedMode === 'party' || (hasParty && !hasNsfw && selectedMode === 'custom'));
+    const hasDrink = activeCards.some(c => ['waterfall','chug','shotroule','penalty'].includes(c.category));
+    if (selectedMode === 'drinking' || (hasDrink && !hasNsfw && !hasParty && selectedMode === 'custom')) document.body.classList.add('drinking-mode');
+    else if (selectedMode === 'party' || (hasParty && !hasNsfw && selectedMode === 'custom')) document.body.classList.add('party-mode');
+    else if (hasNsfw && selectedMode !== 'classic' && selectedMode !== 'party') document.body.classList.add('nsfw-mode');
 
     endScreen.style.display = 'none';
     gameScreen.style.display = 'flex';
     currentPlayerEl.textContent = players[currentPlayerIdx];
     updateProgress();
-    // Reset card to waiting state
-    const EMOJI_MAP = { nsfw: '🔥', custom: '🛠️', party: '🤝' };
+    const EMOJI_MAP = { nsfw: '🔥', custom: '🛠️', party: '🤝', drinking: '🍺' };
     const emoji = EMOJI_MAP[selectedMode] || '🃏';
     gameCard.className = 'card waiting';
     gameCard.innerHTML = `<div class="card-emoji">${emoji}</div><div class="card-text">Tap <strong>Draw</strong> to begin!</div>`;
   }
+
+  // ── WORD MASTER ENGINE ──
+  let wmWords = [];
+  let wmCurrentWord = '';
+  let wmClueList = [];
+  let wmSipCount = 0;
+  let wmRound = 0;
+  let wmMaxRounds = 5;
+  let wmGmIdx = 0;
+
+  function startWordMaster() {
+    wmWords = shuffleDeck([...WORDS]);
+    wmRound = 0;
+    wmSipCount = 0;
+    wmGmIdx = 0;
+    clearBodyModes();
+    wmScreen.style.display = 'flex';
+    nextWmRound();
+  }
+
+  function nextWmRound() {
+    wmRound++;
+    if (wmRound > wmMaxRounds || wmWords.length === 0) { endWordMaster(); return; }
+    wmCurrentWord = wmWords.pop();
+    wmClueList = [];
+    wmGmName.textContent = players[wmGmIdx];
+    wmSecretWord.textContent = wmCurrentWord;
+    wmSecretWord.classList.remove('revealed');
+    wmClues.innerHTML = '';
+    wmRoundInfo.textContent = `Round ${wmRound} / ${wmMaxRounds}`;
+    wmSips.textContent = wmSipCount;
+  }
+
+  // Peek: hold to reveal
+  wmWordArea.addEventListener('pointerdown', () => wmSecretWord.classList.add('revealed'));
+  wmWordArea.addEventListener('pointerup', () => wmSecretWord.classList.remove('revealed'));
+  wmWordArea.addEventListener('pointerleave', () => wmSecretWord.classList.remove('revealed'));
+
+  wmWrongBtn.addEventListener('click', () => {
+    wmSipCount += 2; // guesser + gamemaster each take 1
+    wmSips.textContent = wmSipCount;
+    // Prompt for a clue word
+    const clue = prompt(`Gamemaster (${players[wmGmIdx]}): Enter your next 1-word clue:`);
+    if (clue && clue.trim()) {
+      wmClueList.push(clue.trim().split(/\s+/)[0]); // force single word
+      wmClues.innerHTML = wmClueList.map(c => `<span class="wm-clue-chip">${c}</span>`).join('');
+    }
+  });
+
+  wmCorrectBtn.addEventListener('click', () => {
+    wmSecretWord.classList.add('revealed');
+    alert(`🎉 Correct! The word was "${wmCurrentWord}". Next round!`);
+    wmGmIdx = (wmGmIdx + 1) % players.length;
+    nextWmRound();
+  });
+
+  wmNextBtn.addEventListener('click', () => {
+    alert(`⏭️ Skipped! The word was "${wmCurrentWord}". Everyone drinks 2!`);
+    wmSipCount += players.length * 2;
+    wmSips.textContent = wmSipCount;
+    wmGmIdx = (wmGmIdx + 1) % players.length;
+    nextWmRound();
+  });
+
+  function endWordMaster() {
+    wmScreen.style.display = 'none';
+    endScreen.style.display = 'flex';
+  }
+
+  wmQuitBtn.addEventListener('click', () => {
+    wmScreen.style.display = 'none';
+    modeScreen.style.display = 'flex';
+  });
 
   // ── DRAW ──
   function drawCard() {
@@ -1401,7 +1793,7 @@
     currentPlayerEl.textContent = players[0];
     drawBtn.textContent = 'Draw Card';
     gameCard.className = 'card waiting';
-    const emoji = ({ nsfw: '🔥', custom: '🛠️', party: '🤝' })[selectedMode] || '🃏';
+    const emoji = ({ nsfw: '🔥', custom: '🛠️', party: '🤝', drinking: '🍺' })[selectedMode] || '🃏';
     gameCard.innerHTML = `<div class="card-emoji">${emoji}</div><div class="card-text">Deck reshuffled! Tap <strong>Draw</strong> to go again.</div>`;
     updateProgress();
   }
