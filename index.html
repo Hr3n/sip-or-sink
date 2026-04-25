@@ -18,11 +18,14 @@
     --teal: #00e5c8;
     --pink: #ff4a8d;
     --gold: #ffc44a;
+    --red: #ff3b3b;
+    --orange: #ff8c42;
     --text: #eaeaff;
     --text-dim: #8888aa;
     --radius: 20px;
     --glow-purple: 0 0 30px rgba(180, 74, 255, .4);
     --glow-teal: 0 0 30px rgba(0, 229, 200, .4);
+    --glow-red: 0 0 30px rgba(255, 59, 59, .4);
   }
 
   body {
@@ -149,6 +152,272 @@
   .btn-start:hover { transform: scale(1.05); box-shadow: var(--glow-teal); }
   .btn-start:disabled { opacity: .4; cursor: not-allowed; transform: none; box-shadow: none; }
 
+  /* ── MODE SELECTION ── */
+  #mode-screen {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 2rem 1.5rem;
+    max-width: 480px;
+    width: 100%;
+  }
+  #mode-screen h2 {
+    font-size: 1.4rem;
+    font-weight: 700;
+  }
+  #mode-screen p {
+    color: var(--text-dim);
+    font-size: .9rem;
+    text-align: center;
+  }
+  .mode-cards {
+    display: flex;
+    gap: 1rem;
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .mode-card {
+    flex: 1;
+    min-width: 160px;
+    max-width: 220px;
+    padding: 1.8rem 1.2rem;
+    border-radius: var(--radius);
+    background: var(--surface);
+    border: 2px solid transparent;
+    cursor: pointer;
+    text-align: center;
+    transition: transform .2s, border-color .2s, box-shadow .2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .6rem;
+  }
+  .mode-card:hover { transform: scale(1.04); }
+  .mode-card .mode-emoji { font-size: 2.4rem; }
+  .mode-card .mode-title { font-size: 1.1rem; font-weight: 700; }
+  .mode-card .mode-desc { font-size: .8rem; color: var(--text-dim); line-height: 1.4; }
+
+  .mode-card.classic {
+    border-color: rgba(0,229,200,.3);
+  }
+  .mode-card.classic:hover {
+    border-color: var(--teal);
+    box-shadow: var(--glow-teal);
+  }
+  .mode-card.classic.selected {
+    border-color: var(--teal);
+    box-shadow: var(--glow-teal);
+    background: rgba(0,229,200,.08);
+  }
+
+  .mode-card.nsfw {
+    border-color: rgba(255,59,59,.3);
+  }
+  .mode-card.nsfw:hover {
+    border-color: var(--red);
+    box-shadow: var(--glow-red);
+  }
+  .mode-card.nsfw.selected {
+    border-color: var(--red);
+    box-shadow: var(--glow-red);
+    background: rgba(255,59,59,.08);
+  }
+
+  .mode-card.custom {
+    border-color: rgba(180,74,255,.3);
+  }
+  .mode-card.custom:hover {
+    border-color: var(--purple);
+    box-shadow: var(--glow-purple);
+  }
+  .mode-card.custom.selected {
+    border-color: var(--purple);
+    box-shadow: var(--glow-purple);
+    background: rgba(180,74,255,.08);
+  }
+
+  .nsfw-warning {
+    font-size: .75rem;
+    color: var(--red);
+    background: rgba(255,59,59,.1);
+    padding: .4rem .8rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255,59,59,.2);
+  }
+
+  .btn-mode-start {
+    padding: .9rem 3rem;
+    border-radius: 14px;
+    border: none;
+    background: linear-gradient(135deg, var(--purple), var(--teal));
+    color: #fff;
+    font-size: 1.15rem;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: transform .15s, box-shadow .25s;
+  }
+  .btn-mode-start:hover { transform: scale(1.05); box-shadow: var(--glow-teal); }
+  .btn-mode-start.nsfw-active {
+    background: linear-gradient(135deg, var(--red), var(--orange));
+  }
+  .btn-mode-start.nsfw-active:hover { box-shadow: var(--glow-red); }
+  .btn-mode-start.custom-active {
+    background: linear-gradient(135deg, var(--purple), var(--gold));
+  }
+  .btn-mode-start.custom-active:hover { box-shadow: var(--glow-purple); }
+  .btn-mode-back {
+    background: none;
+    border: 1px solid var(--text-dim);
+    color: var(--text-dim);
+    padding: .5rem 1.5rem;
+    border-radius: 12px;
+    font-family: inherit;
+    font-size: .9rem;
+    cursor: pointer;
+    transition: border-color .2s, color .2s;
+  }
+  .btn-mode-back:hover { border-color: var(--text); color: var(--text); }
+
+  /* ── DECK BUILDER ── */
+  #builder-screen {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.2rem;
+    padding: 1.5rem;
+    width: 100%;
+    max-width: 520px;
+  }
+  #builder-screen h2 { font-size: 1.3rem; font-weight: 700; }
+  .builder-counter {
+    font-size: .85rem;
+    color: var(--text-dim);
+    background: var(--surface);
+    padding: .4rem 1rem;
+    border-radius: 10px;
+    border: 1px solid rgba(180,74,255,.2);
+  }
+  .builder-counter strong { color: var(--purple); }
+  .builder-categories {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-height: 55vh;
+    overflow-y: auto;
+    padding-right: .3rem;
+  }
+  .builder-categories::-webkit-scrollbar { width: 4px; }
+  .builder-categories::-webkit-scrollbar-track { background: transparent; }
+  .builder-categories::-webkit-scrollbar-thumb { background: var(--purple); border-radius: 4px; }
+  .builder-cat-group {
+    background: var(--surface);
+    border-radius: 14px;
+    padding: 1rem;
+    border: 1px solid rgba(255,255,255,.04);
+  }
+  .builder-cat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: .6rem;
+  }
+  .builder-cat-title {
+    font-size: .85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .builder-cat-actions {
+    display: flex;
+    gap: .4rem;
+  }
+  .builder-cat-actions button {
+    font-size: .7rem;
+    background: none;
+    border: 1px solid var(--text-dim);
+    color: var(--text-dim);
+    border-radius: 6px;
+    padding: .2rem .5rem;
+    cursor: pointer;
+    font-family: inherit;
+    transition: color .2s, border-color .2s;
+  }
+  .builder-cat-actions button:hover { color: var(--text); border-color: var(--text); }
+  .builder-card-list {
+    display: flex;
+    flex-direction: column;
+    gap: .4rem;
+  }
+  .builder-card-item {
+    display: flex;
+    align-items: flex-start;
+    gap: .6rem;
+    padding: .5rem .6rem;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background .15s;
+    user-select: none;
+  }
+  .builder-card-item:hover { background: rgba(255,255,255,.03); }
+  .builder-card-item input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    border: 2px solid var(--text-dim);
+    border-radius: 6px;
+    background: transparent;
+    cursor: pointer;
+    position: relative;
+    margin-top: 2px;
+    transition: border-color .2s, background .2s;
+  }
+  .builder-card-item input[type="checkbox"]:checked {
+    border-color: var(--purple);
+    background: var(--purple);
+  }
+  .builder-card-item input[type="checkbox"]:checked::after {
+    content: '✓';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .builder-card-text {
+    font-size: .82rem;
+    color: var(--text-dim);
+    line-height: 1.4;
+    transition: color .15s;
+  }
+  .builder-card-item.checked .builder-card-text { color: var(--text); }
+  .builder-actions {
+    display: flex;
+    gap: .8rem;
+    width: 100%;
+  }
+  .btn-build-play {
+    flex: 1;
+    padding: .9rem;
+    border-radius: 14px;
+    border: none;
+    background: linear-gradient(135deg, var(--purple), var(--gold));
+    color: #fff;
+    font-size: 1.05rem;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: transform .15s, box-shadow .25s;
+  }
+  .btn-build-play:hover { transform: scale(1.04); box-shadow: var(--glow-purple); }
+  .btn-build-play:disabled { opacity: .4; cursor: not-allowed; transform: none; box-shadow: none; }
+
   /* ── GAME SCREEN ── */
   #game-screen {
     display: none;
@@ -234,10 +503,16 @@
     padding: .3rem .9rem;
     border-radius: 99px;
   }
-  .cat-counting  { background: rgba(180,74,255,.2); color: var(--purple); }
-  .cat-voting    { background: rgba(0,229,200,.2); color: var(--teal); }
-  .cat-rules     { background: rgba(255,74,141,.2); color: var(--pink); }
-  .cat-rapidfire { background: rgba(255,196,74,.2); color: var(--gold); }
+  .cat-counting    { background: rgba(180,74,255,.2); color: var(--purple); }
+  .cat-voting      { background: rgba(0,229,200,.2); color: var(--teal); }
+  .cat-rules       { background: rgba(255,74,141,.2); color: var(--pink); }
+  .cat-rapidfire   { background: rgba(255,196,74,.2); color: var(--gold); }
+  /* NSFW categories */
+  .cat-confessions { background: rgba(255,59,59,.2); color: var(--red); }
+  .cat-dares       { background: rgba(255,140,66,.2); color: var(--orange); }
+  .cat-spicyvote   { background: rgba(255,74,141,.25); color: var(--pink); }
+  .cat-challenges  { background: rgba(180,74,255,.2); color: var(--purple); }
+  .cat-wildcard    { background: rgba(255,196,74,.25); color: var(--gold); }
 
   .card-emoji { font-size: 2.8rem; }
   .card-text { font-size: 1.15rem; font-weight: 600; line-height: 1.5; color: var(--text); }
@@ -247,6 +522,20 @@
     background: linear-gradient(135deg, rgba(180,74,255,.08), rgba(0,229,200,.08));
   }
   .card.waiting .card-text { color: var(--text-dim); font-weight: 400; }
+
+  /* NSFW theme overrides */
+  body.nsfw-mode .card::before {
+    background: linear-gradient(135deg, var(--red), transparent 50%, var(--orange));
+  }
+  body.nsfw-mode .progress-bar .fill {
+    background: linear-gradient(90deg, var(--red), var(--orange));
+  }
+  body.nsfw-mode .btn-draw {
+    background: linear-gradient(135deg, var(--red), var(--orange));
+  }
+  body.nsfw-mode .btn-draw:hover { box-shadow: var(--glow-red); }
+  body.nsfw-mode .player-banner .name { color: var(--red); }
+  body.nsfw-mode .player-banner { border-color: rgba(255,59,59,.25); }
 
   /* Buttons */
   .game-actions {
@@ -350,7 +639,44 @@
     <button id="add-player-btn" type="button">Add</button>
   </div>
   <div class="player-chips" id="player-chips"></div>
-  <button class="btn-start" id="start-btn" disabled>Start Game</button>
+  <button class="btn-start" id="start-btn" disabled>Next →</button>
+</div>
+
+<!-- MODE SELECTION -->
+<div id="mode-screen">
+  <h2>Choose Your Mode</h2>
+  <p>How wild do you want tonight to get?</p>
+  <div class="mode-cards">
+    <div class="mode-card classic selected" id="mode-classic" tabindex="0">
+      <div class="mode-emoji">🍻</div>
+      <div class="mode-title">Classic</div>
+      <div class="mode-desc">Fun party prompts, counting, voting &amp; rules. Safe for all groups.</div>
+    </div>
+    <div class="mode-card nsfw" id="mode-nsfw" tabindex="0">
+      <div class="mode-emoji">🔥</div>
+      <div class="mode-title">NSFW</div>
+      <div class="mode-desc">Spicy confessions, wild dares &amp; questions you'll regret. 18+ only.</div>
+    </div>
+    <div class="mode-card custom" id="mode-custom" tabindex="0">
+      <div class="mode-emoji">🛠️</div>
+      <div class="mode-title">Custom</div>
+      <div class="mode-desc">Build your own deck. Pick &amp; choose cards from all pools.</div>
+    </div>
+  </div>
+  <div class="nsfw-warning" id="nsfw-warning" style="display:none">⚠️ Contains adult content. Make sure everyone is comfortable!</div>
+  <button class="btn-mode-start" id="mode-start-btn">Start Game 🎴</button>
+  <button class="btn-mode-back" id="mode-back-btn">← Back to Players</button>
+</div>
+
+<!-- DECK BUILDER -->
+<div id="builder-screen">
+  <h2>🛠️ Build Your Deck</h2>
+  <div class="builder-counter" id="builder-counter">Selected: <strong>0</strong> cards</div>
+  <div class="builder-categories" id="builder-categories"></div>
+  <div class="builder-actions">
+    <button class="btn-mode-back" id="builder-back-btn">← Back</button>
+    <button class="btn-build-play" id="builder-play-btn" disabled>Play with 0 Cards</button>
+  </div>
 </div>
 
 <!-- GAME -->
@@ -387,8 +713,8 @@
 </div>
 
 <script>
-  // ── CARD DATA (30 cards) ──
-  const CARDS = [
+  // ── CLASSIC CARD DATA (30 cards) ──
+  const CARDS_CLASSIC = [
     // Counting (8)
     { category: 'counting', emoji: '📱', text: 'Take 1 sip for every ex you still have on social media.' },
     { category: 'counting', emoji: '📸', text: 'Take 1 sip for every selfie you took this week.' },
@@ -428,17 +754,70 @@
     { category: 'rapidfire', emoji: '🐾', text: 'Name animals that start with the letter B. Fail or repeat? Drink 2.' },
   ];
 
+  // ── NSFW CARD DATA (30 cards) ──
+  const CARDS_NSFW = [
+    // Confessions (7)
+    { category: 'confessions', emoji: '🤭', text: 'Confess the most embarrassing place you hooked up. Refuse? Chug your drink.' },
+    { category: 'confessions', emoji: '📱', text: 'Show the last DM you sent. If you refuse, take 4 sips.' },
+    { category: 'confessions', emoji: '🔥', text: "Describe your worst date in 10 seconds. If the group isn't horrified enough, drink 3." },
+    { category: 'confessions', emoji: '💀', text: "Admit the most unhinged thing you've done while drunk. Everyone votes — if they don't believe you, drink 3." },
+    { category: 'confessions', emoji: '👀', text: "Name someone in this room you'd swipe right on. Refuse? Finish your drink." },
+    { category: 'confessions', emoji: '🫣', text: "What's the biggest lie you've told a partner? Refuse to answer? Take 5 sips." },
+    { category: 'confessions', emoji: '💋', text: "How many people have you kissed this year? Take 1 sip per person." },
+
+    // Dares (7)
+    { category: 'dares', emoji: '📞', text: 'Call your most recent contact and tell them they looked cute today. Refuse? Drink 5.' },
+    { category: 'dares', emoji: '🕺', text: 'Do your best sexy dance for 15 seconds. Everyone votes — if it was bad, drink 3.' },
+    { category: 'dares', emoji: '🤳', text: 'Post a thirst trap selfie right now (you can delete it later). Refuse? Chug.' },
+    { category: 'dares', emoji: '💬', text: "Send 'I miss you' to your 3rd most recent contact. No context. Refuse? Drink 4." },
+    { category: 'dares', emoji: '👅', text: 'Lick your elbow or take 3 sips. (Yes, we know it\'s almost impossible.)' },
+    { category: 'dares', emoji: '🎭', text: "Do an impression of another player being flirty. They judge — if it's bad, drink 3." },
+    { category: 'dares', emoji: '🫦', text: "Whisper something seductive to the player on your left. If they laugh, you both drink 2." },
+
+    // Spicy Voting (6)
+    { category: 'spicyvote', emoji: '🫠', text: 'Vote: Who has the most questionable search history? That person drinks 4.' },
+    { category: 'spicyvote', emoji: '👑', text: 'Vote: Who is most likely to have a secret OnlyFans? That person takes 3.' },
+    { category: 'spicyvote', emoji: '😈', text: 'Vote: Who would be the worst in bed? That person drinks 5. Brutal.' },
+    { category: 'spicyvote', emoji: '💘', text: "Vote: Who has caught feelings the fastest? That person drinks 3." },
+    { category: 'spicyvote', emoji: '🚨', text: "Vote: Who is most likely to send a risky text tonight? That person takes 4 sips." },
+    { category: 'spicyvote', emoji: '🔞', text: "Vote: Who has the wildest body count? That person finishes their drink." },
+
+    // Challenges (6)
+    { category: 'challenges', emoji: '⏱️', text: "Stare into the eyes of the player across from you for 30 seconds without laughing. Loser drinks 3." },
+    { category: 'challenges', emoji: '🍑', text: "Twerk for 10 seconds or take 4 sips. The group decides if it was good enough." },
+    { category: 'challenges', emoji: '💃', text: "Give a lap dance to a pillow. If you stop or laugh, drink 3." },
+    { category: 'challenges', emoji: '🧊', text: "Hold an ice cube in your mouth for 30 seconds. Spit it out early? Drink 3." },
+    { category: 'challenges', emoji: '🎤', text: "Moan like you're in a movie scene. If anyone laughs, THEY drink 2 each." },
+    { category: 'challenges', emoji: '👄', text: "Kiss your bicep like it's a person. Bonus sip if you whisper a name." },
+
+    // Wildcards (4)
+    { category: 'wildcard', emoji: '🃏', text: "Pick any player. They must answer ONE question truthfully — anything goes. Refuse? They chug." },
+    { category: 'wildcard', emoji: '🎰', text: "Spin your phone — whoever it points to must remove one accessory (watch, ring, etc.) or drink 4." },
+    { category: 'wildcard', emoji: '🌶️', text: "Hot Seat! Everyone asks you one spicy question each. Skip any? Take 2 sips per skip." },
+    { category: 'wildcard', emoji: '💣', text: "Body shot! Pick someone to take a body shot off of. Both refuse? Both chug." },
+  ];
+
   const CATEGORY_CSS = {
-    counting:  'cat-counting',
-    voting:    'cat-voting',
-    rules:     'cat-rules',
-    rapidfire: 'cat-rapidfire',
+    counting:    'cat-counting',
+    voting:      'cat-voting',
+    rules:       'cat-rules',
+    rapidfire:   'cat-rapidfire',
+    confessions: 'cat-confessions',
+    dares:       'cat-dares',
+    spicyvote:   'cat-spicyvote',
+    challenges:  'cat-challenges',
+    wildcard:    'cat-wildcard',
   };
   const CATEGORY_LABEL = {
-    counting:  'Counting',
-    voting:    'Voting',
-    rules:     'Rules',
-    rapidfire: 'Rapid Fire',
+    counting:    'Counting',
+    voting:      'Voting',
+    rules:       'Rules',
+    rapidfire:   'Rapid Fire',
+    confessions: 'Confessions',
+    dares:       'Dare',
+    spicyvote:   'Spicy Vote',
+    challenges:  'Challenge',
+    wildcard:    'Wildcard',
   };
 
   // ── STATE ──
@@ -446,23 +825,39 @@
   let currentPlayerIdx = 0;
   let deck = [];
   let drawnCount = 0;
+  let selectedMode = 'classic';
+  let activeCards = CARDS_CLASSIC;
+  let customSelected = new Set(); // indices into ALL_CARDS
+  const ALL_CARDS = [...CARDS_CLASSIC, ...CARDS_NSFW];
 
   // ── DOM ──
   const $ = id => document.getElementById(id);
-  const setupScreen  = $('setup-screen');
-  const gameScreen   = $('game-screen');
-  const endScreen    = $('end-screen');
-  const playerInput  = $('player-input');
-  const addPlayerBtn = $('add-player-btn');
-  const playerChips  = $('player-chips');
-  const startBtn     = $('start-btn');
+  const setupScreen    = $('setup-screen');
+  const modeScreen     = $('mode-screen');
+  const builderScreen  = $('builder-screen');
+  const gameScreen     = $('game-screen');
+  const endScreen      = $('end-screen');
+  const playerInput    = $('player-input');
+  const addPlayerBtn   = $('add-player-btn');
+  const playerChips    = $('player-chips');
+  const startBtn       = $('start-btn');
+  const modeClassic    = $('mode-classic');
+  const modeNsfw       = $('mode-nsfw');
+  const modeCustom     = $('mode-custom');
+  const nsfwWarning    = $('nsfw-warning');
+  const modeStartBtn   = $('mode-start-btn');
+  const modeBackBtn    = $('mode-back-btn');
+  const builderCounter = $('builder-counter');
+  const builderCats    = $('builder-categories');
+  const builderBackBtn = $('builder-back-btn');
+  const builderPlayBtn = $('builder-play-btn');
   const currentPlayerEl = $('current-player');
-  const cardCounter  = $('card-counter');
-  const gameCard     = $('game-card');
-  const drawBtn      = $('draw-btn');
-  const resetBtn     = $('reset-btn');
-  const replayBtn    = $('replay-btn');
-  const progressFill = $('progress-fill');
+  const cardCounter   = $('card-counter');
+  const gameCard      = $('game-card');
+  const drawBtn       = $('draw-btn');
+  const resetBtn      = $('reset-btn');
+  const replayBtn     = $('replay-btn');
+  const progressFill  = $('progress-fill');
   const progressLabel = $('progress-label');
 
   // ── SETUP ──
@@ -491,22 +886,168 @@
   addPlayerBtn.addEventListener('click', addPlayer);
   playerInput.addEventListener('keydown', e => { if (e.key === 'Enter') addPlayer(); });
 
+  // ── NAVIGATE TO MODE SCREEN ──
+  startBtn.addEventListener('click', () => {
+    setupScreen.style.display = 'none';
+    modeScreen.style.display = 'flex';
+  });
+
+  // ── MODE SELECTION ──
+  function selectMode(mode) {
+    selectedMode = mode;
+    modeClassic.classList.remove('selected');
+    modeNsfw.classList.remove('selected');
+    modeCustom.classList.remove('selected');
+    nsfwWarning.style.display = 'none';
+    modeStartBtn.classList.remove('nsfw-active', 'custom-active');
+
+    if (mode === 'classic') {
+      modeClassic.classList.add('selected');
+      modeStartBtn.textContent = 'Start Game 🎴';
+    } else if (mode === 'nsfw') {
+      modeNsfw.classList.add('selected');
+      nsfwWarning.style.display = 'block';
+      modeStartBtn.classList.add('nsfw-active');
+      modeStartBtn.textContent = 'Start Game 🔥';
+    } else {
+      modeCustom.classList.add('selected');
+      modeStartBtn.classList.add('custom-active');
+      modeStartBtn.textContent = 'Build Deck 🛠️';
+    }
+  }
+
+  modeClassic.addEventListener('click', () => selectMode('classic'));
+  modeNsfw.addEventListener('click', () => selectMode('nsfw'));
+  modeCustom.addEventListener('click', () => selectMode('custom'));
+
+  modeBackBtn.addEventListener('click', () => {
+    modeScreen.style.display = 'none';
+    setupScreen.style.display = 'flex';
+  });
+
+  // ── MODE START HANDLER ──
+  modeStartBtn.addEventListener('click', () => {
+    if (selectedMode === 'custom') {
+      modeScreen.style.display = 'none';
+      renderBuilder();
+      builderScreen.style.display = 'flex';
+    } else {
+      startGame();
+    }
+  });
+
+  // ── DECK BUILDER ──
+  function renderBuilder() {
+    // Group ALL cards by category
+    const groups = {};
+    ALL_CARDS.forEach((card, idx) => {
+      if (!groups[card.category]) groups[card.category] = [];
+      groups[card.category].push({ ...card, globalIdx: idx });
+    });
+
+    builderCats.innerHTML = '';
+    for (const [cat, cards] of Object.entries(groups)) {
+      const catLabel = CATEGORY_LABEL[cat] || cat;
+      const catCss = CATEGORY_CSS[cat] || '';
+      const group = document.createElement('div');
+      group.className = 'builder-cat-group';
+      group.innerHTML = `
+        <div class="builder-cat-header">
+          <span class="builder-cat-title ${catCss}">${catLabel} (${cards.length})</span>
+          <div class="builder-cat-actions">
+            <button data-cat="${cat}" data-action="all">All</button>
+            <button data-cat="${cat}" data-action="none">None</button>
+          </div>
+        </div>
+        <div class="builder-card-list">
+          ${cards.map(c => `
+            <label class="builder-card-item${customSelected.has(c.globalIdx) ? ' checked' : ''}">
+              <input type="checkbox" data-idx="${c.globalIdx}" ${customSelected.has(c.globalIdx) ? 'checked' : ''}>
+              <span class="builder-card-text">${c.emoji} ${c.text}</span>
+            </label>
+          `).join('')}
+        </div>
+      `;
+      builderCats.appendChild(group);
+    }
+
+    // Event delegation for checkboxes
+    builderCats.onclick = (e) => {
+      // Handle All/None buttons
+      const btn = e.target.closest('[data-action]');
+      if (btn) {
+        const cat = btn.dataset.cat;
+        const action = btn.dataset.action;
+        ALL_CARDS.forEach((card, idx) => {
+          if (card.category === cat) {
+            if (action === 'all') customSelected.add(idx);
+            else customSelected.delete(idx);
+          }
+        });
+        renderBuilder();
+        return;
+      }
+
+      // Handle checkbox toggle
+      const checkbox = e.target.closest('input[type="checkbox"]');
+      if (checkbox) {
+        const idx = parseInt(checkbox.dataset.idx);
+        if (checkbox.checked) customSelected.add(idx);
+        else customSelected.delete(idx);
+        // Toggle visual class
+        const item = checkbox.closest('.builder-card-item');
+        item.classList.toggle('checked', checkbox.checked);
+        updateBuilderCount();
+      }
+    };
+
+    updateBuilderCount();
+  }
+
+  function updateBuilderCount() {
+    const count = customSelected.size;
+    builderCounter.innerHTML = `Selected: <strong>${count}</strong> cards`;
+    builderPlayBtn.textContent = `Play with ${count} Card${count !== 1 ? 's' : ''}`;
+    builderPlayBtn.disabled = count < 5;
+  }
+
+  builderBackBtn.addEventListener('click', () => {
+    builderScreen.style.display = 'none';
+    modeScreen.style.display = 'flex';
+  });
+
+  builderPlayBtn.addEventListener('click', () => {
+    // Build custom deck from selected indices
+    activeCards = [...customSelected].map(i => ALL_CARDS[i]);
+    builderScreen.style.display = 'none';
+    launchGame();
+  });
+
   // ── START GAME ──
   function startGame() {
-    deck = shuffleDeck([...CARDS]);
+    activeCards = selectedMode === 'nsfw' ? CARDS_NSFW : CARDS_CLASSIC;
+    modeScreen.style.display = 'none';
+    launchGame();
+  }
+
+  function launchGame() {
+    deck = shuffleDeck([...activeCards]);
     drawnCount = 0;
     currentPlayerIdx = 0;
-    setupScreen.style.display = 'none';
+
+    // Toggle NSFW body theme
+    const hasNsfw = activeCards.some(c => ['confessions','dares','spicyvote','challenges','wildcard'].includes(c.category));
+    document.body.classList.toggle('nsfw-mode', hasNsfw && selectedMode !== 'classic');
+
     endScreen.style.display = 'none';
     gameScreen.style.display = 'flex';
     currentPlayerEl.textContent = players[currentPlayerIdx];
     updateProgress();
     // Reset card to waiting state
+    const emoji = selectedMode === 'nsfw' ? '🔥' : selectedMode === 'custom' ? '🛠️' : '🃏';
     gameCard.className = 'card waiting';
-    gameCard.innerHTML = `<div class="card-emoji">🃏</div><div class="card-text">Tap <strong>Draw</strong> to begin!</div>`;
+    gameCard.innerHTML = `<div class="card-emoji">${emoji}</div><div class="card-text">Tap <strong>Draw</strong> to begin!</div>`;
   }
-
-  startBtn.addEventListener('click', startGame);
 
   // ── DRAW ──
   function drawCard() {
@@ -545,7 +1086,7 @@
 
   // ── PROGRESS ──
   function updateProgress() {
-    const total = CARDS.length;
+    const total = activeCards.length;
     const pct = (drawnCount / total) * 100;
     progressFill.style.width = pct + '%';
     cardCounter.textContent = `${drawnCount} / ${total}`;
@@ -554,13 +1095,14 @@
 
   // ── RESET ──
   function resetGame() {
-    deck = shuffleDeck([...CARDS]);
+    deck = shuffleDeck([...activeCards]);
     drawnCount = 0;
     currentPlayerIdx = 0;
     currentPlayerEl.textContent = players[0];
     drawBtn.textContent = 'Draw Card';
     gameCard.className = 'card waiting';
-    gameCard.innerHTML = `<div class="card-emoji">🃏</div><div class="card-text">Deck reshuffled! Tap <strong>Draw</strong> to go again.</div>`;
+    const emoji = selectedMode === 'nsfw' ? '🔥' : selectedMode === 'custom' ? '🛠️' : '🃏';
+    gameCard.innerHTML = `<div class="card-emoji">${emoji}</div><div class="card-text">Deck reshuffled! Tap <strong>Draw</strong> to go again.</div>`;
     updateProgress();
   }
 
@@ -574,8 +1116,8 @@
 
   replayBtn.addEventListener('click', () => {
     endScreen.style.display = 'none';
-    gameScreen.style.display = 'flex';
-    resetGame();
+    // Go back to mode selection so they can switch
+    modeScreen.style.display = 'flex';
   });
 
   // ── SHUFFLE (Fisher-Yates) ──
