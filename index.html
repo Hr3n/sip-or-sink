@@ -33,6 +33,8 @@
     --glow-cyan: 0 0 30px rgba(0, 212, 255, .4);
     --glow-amber: 0 0 30px rgba(245, 158, 11, .4);
     --glow-lime: 0 0 30px rgba(132, 204, 22, .4);
+    --indigo: #6366f1;
+    --glow-indigo: 0 0 30px rgba(99, 102, 241, .4);
   }
 
   body {
@@ -297,6 +299,32 @@
     background: rgba(132,204,22,.08);
   }
 
+  .mode-card.nhie {
+    border-color: rgba(99,102,241,.3);
+  }
+  .mode-card.nhie:hover {
+    border-color: var(--indigo);
+    box-shadow: var(--glow-indigo);
+  }
+  .mode-card.nhie.selected {
+    border-color: var(--indigo);
+    box-shadow: var(--glow-indigo);
+    background: rgba(99,102,241,.08);
+  }
+
+  .mode-card.wyr {
+    border-color: rgba(236,72,153,.3);
+  }
+  .mode-card.wyr:hover {
+    border-color: var(--pink);
+    box-shadow: 0 0 30px rgba(236,72,153,.4);
+  }
+  .mode-card.wyr.selected {
+    border-color: var(--pink);
+    box-shadow: 0 0 30px rgba(236,72,153,.4);
+    background: rgba(236,72,153,.08);
+  }
+
   .nsfw-warning {
     font-size: .75rem;
     color: var(--red);
@@ -343,6 +371,14 @@
     background: linear-gradient(135deg, var(--lime), var(--teal));
   }
   .btn-mode-start.wordmaster-active:hover { box-shadow: var(--glow-lime); }
+  .btn-mode-start.nhie-active {
+    background: linear-gradient(135deg, var(--indigo), var(--purple));
+  }
+  .btn-mode-start.nhie-active:hover { box-shadow: var(--glow-indigo); }
+  .btn-mode-start.wyr-active {
+    background: linear-gradient(135deg, var(--pink), var(--purple));
+  }
+  .btn-mode-start.wyr-active:hover { box-shadow: 0 0 30px rgba(236,72,153,.4); }
   .btn-mode-back {
     background: none;
     border: 1px solid var(--text-dim);
@@ -598,6 +634,8 @@
   .cat-chug        { background: rgba(255,140,66,.2); color: var(--orange); }
   .cat-shotroule   { background: rgba(255,59,59,.2); color: var(--red); }
   .cat-penalty     { background: rgba(255,196,74,.2); color: var(--gold); }
+  .cat-nhie        { background: rgba(99,102,241,.2); color: var(--indigo); }
+  .cat-wyr         { background: rgba(236,72,153,.2); color: var(--pink); }
 
   .card-emoji { font-size: 2.8rem; }
   .card-text { font-size: 1.15rem; font-weight: 600; line-height: 1.5; color: var(--text); }
@@ -1134,6 +1172,16 @@
       <div class="mode-title">Truth or Dare</div>
       <div class="mode-desc">Classic T or D with 4 spice levels. Pick your heat!</div>
     </div>
+    <div class="mode-card nhie" id="mode-nhie" tabindex="0">
+      <div class="mode-emoji">🤫</div>
+      <div class="mode-title">Never Have I Ever</div>
+      <div class="mode-desc">The classic confession game. 4 difficulties to expose your secrets.</div>
+    </div>
+    <div class="mode-card wyr" id="mode-wyr" tabindex="0">
+      <div class="mode-emoji">⚖️</div>
+      <div class="mode-title">Would You Rather</div>
+      <div class="mode-desc">Impossible choices. 4 difficulties to test your morals.</div>
+    </div>
     <div class="mode-card custom" id="mode-custom" tabindex="0">
       <div class="mode-emoji">🛠️</div>
       <div class="mode-title">Custom</div>
@@ -1236,6 +1284,70 @@
   <div class="wm-actions">
     <button class="wm-btn wm-btn-correct" id="tod-start-btn">Let's Go! 🎯</button>
     <button class="wm-btn wm-btn-quit" id="tod-back-btn">← Back to Modes</button>
+  </div>
+</div>
+
+<!-- NEVER HAVE I EVER -->
+<div id="nhie-screen" style="display:none;flex-direction:column;align-items:center;gap:1.2rem;padding:1rem 1.5rem 2rem;width:100%;max-width:480px;">
+  <h2>🤫 Never Have I Ever</h2>
+  <p style="color:var(--text-dim);font-size:.85rem">Pick a difficulty level</p>
+  <div class="tod-diff-cards">
+    <div class="tod-diff-card selected" data-diff="mild">
+      <div class="diff-emoji">😇</div>
+      <div class="diff-title">Mild</div>
+      <div class="diff-desc">Light &amp; fun for everyone</div>
+    </div>
+    <div class="tod-diff-card" data-diff="medium">
+      <div class="diff-emoji">😏</div>
+      <div class="diff-title">Medium</div>
+      <div class="diff-desc">Things get interesting</div>
+    </div>
+    <div class="tod-diff-card" data-diff="spicy">
+      <div class="diff-emoji">🌶️</div>
+      <div class="diff-title">Spicy</div>
+      <div class="diff-desc">Bold moves only</div>
+    </div>
+    <div class="tod-diff-card" data-diff="nsfw">
+      <div class="diff-emoji">🔞</div>
+      <div class="diff-title">NSFW</div>
+      <div class="diff-desc">Adults only. No mercy.</div>
+    </div>
+  </div>
+  <div class="wm-actions">
+    <button class="wm-btn wm-btn-correct" id="nhie-start-btn">Let's Go! 🤫</button>
+    <button class="wm-btn wm-btn-quit" id="nhie-back-btn">← Back to Modes</button>
+  </div>
+</div>
+
+<!-- WOULD YOU RATHER -->
+<div id="wyr-screen" style="display:none;flex-direction:column;align-items:center;gap:1.2rem;padding:1rem 1.5rem 2rem;width:100%;max-width:480px;">
+  <h2>⚖️ Would You Rather</h2>
+  <p style="color:var(--text-dim);font-size:.85rem">Pick a difficulty level</p>
+  <div class="tod-diff-cards">
+    <div class="tod-diff-card selected" data-diff="mild">
+      <div class="diff-emoji">😇</div>
+      <div class="diff-title">Mild</div>
+      <div class="diff-desc">Light &amp; fun for everyone</div>
+    </div>
+    <div class="tod-diff-card" data-diff="medium">
+      <div class="diff-emoji">😏</div>
+      <div class="diff-title">Medium</div>
+      <div class="diff-desc">Things get interesting</div>
+    </div>
+    <div class="tod-diff-card" data-diff="spicy">
+      <div class="diff-emoji">🌶️</div>
+      <div class="diff-title">Spicy</div>
+      <div class="diff-desc">Bold moves only</div>
+    </div>
+    <div class="tod-diff-card" data-diff="nsfw">
+      <div class="diff-emoji">🔞</div>
+      <div class="diff-title">NSFW</div>
+      <div class="diff-desc">Adults only. No mercy.</div>
+    </div>
+  </div>
+  <div class="wm-actions">
+    <button class="wm-btn wm-btn-correct" id="wyr-start-btn">Let's Go! ⚖️</button>
+    <button class="wm-btn wm-btn-quit" id="wyr-back-btn">← Back to Modes</button>
   </div>
 </div>
 
@@ -1556,6 +1668,102 @@
     { difficulty:'todnsfw', type:'dare', emoji:'🫂', text:'Sit on the lap of the player to your left for the next round.' },
   ];
 
+  // ── NEVER HAVE I EVER (40 cards: 10 per difficulty) ──
+  const CARDS_NHIE = [
+    // Mild (10)
+    { difficulty:'mild', category:'nhie', emoji:'🤐', text:"Never have I ever pretended to be sick to get out of school/work." },
+    { difficulty:'mild', category:'nhie', emoji:'🎁', text:"Never have I ever re-gifted a present." },
+    { difficulty:'mild', category:'nhie', emoji:'🚗', text:"Never have I ever been pulled over by a cop." },
+    { difficulty:'mild', category:'nhie', emoji:'🤫', text:"Never have I ever snooped through a sibling's or friend's room." },
+    { difficulty:'mild', category:'nhie', emoji:'💇', text:"Never have I ever cut my own hair and deeply regretted it." },
+    { difficulty:'mild', category:'nhie', emoji:'🎤', text:"Never have I ever sung karaoke in public." },
+    { difficulty:'mild', category:'nhie', emoji:'🏃', text:"Never have I ever tripped and fallen in public." },
+    { difficulty:'mild', category:'nhie', emoji:'📺', text:"Never have I ever binge-watched an entire TV show in one day." },
+    { difficulty:'mild', category:'nhie', emoji:'📱', text:"Never have I ever dropped my phone in the toilet." },
+    { difficulty:'mild', category:'nhie', emoji:'😭', text:"Never have I ever cried during a Pixar movie." },
+    // Medium (10)
+    { difficulty:'medium', category:'nhie', emoji:'💸', text:"Never have I ever spent more than $200 on a single night out." },
+    { difficulty:'medium', category:'nhie', emoji:'👀', text:"Never have I ever looked through my partner's phone." },
+    { difficulty:'medium', category:'nhie', emoji:'🤥', text:"Never have I ever lied about my age to get into a club or bar." },
+    { difficulty:'medium', category:'nhie', emoji:'💬', text:"Never have I ever sent a text to the wrong person on purpose." },
+    { difficulty:'medium', category:'nhie', emoji:'🤢', text:"Never have I ever thrown up in an Uber or taxi." },
+    { difficulty:'medium', category:'nhie', emoji:'🚫', text:"Never have I ever been kicked out of a bar or club." },
+    { difficulty:'medium', category:'nhie', emoji:'👻', text:"Never have I ever ghosted someone after 3 or more dates." },
+    { difficulty:'medium', category:'nhie', emoji:'🤬', text:"Never have I ever gotten into a physical fight." },
+    { difficulty:'medium', category:'nhie', emoji:'📸', text:"Never have I ever used a fake ID." },
+    { difficulty:'medium', category:'nhie', emoji:'🥂', text:"Never have I ever skipped out on paying a bill at a restaurant." },
+    // Spicy (10)
+    { difficulty:'spicy', category:'nhie', emoji:'🌶️', text:"Never have I ever hooked up with an ex." },
+    { difficulty:'spicy', category:'nhie', emoji:'💋', text:"Never have I ever made out with someone I just met." },
+    { difficulty:'spicy', category:'nhie', emoji:'🤫', text:"Never have I ever kept a secret from my current partner." },
+    { difficulty:'spicy', category:'nhie', emoji:'👀', text:"Never have I ever slid into a stranger's DMs." },
+    { difficulty:'spicy', category:'nhie', emoji:'💕', text:"Never have I ever had a crush on a friend's sibling." },
+    { difficulty:'spicy', category:'nhie', emoji:'🔥', text:"Never have I ever gone skinny dipping." },
+    { difficulty:'spicy', category:'nhie', emoji:'🛏️', text:"Never have I ever woken up and not known where I was." },
+    { difficulty:'spicy', category:'nhie', emoji:'😏', text:"Never have I ever dated two people at the same time." },
+    { difficulty:'spicy', category:'nhie', emoji:'📱', text:"Never have I ever sent a risky text and immediately regretted it." },
+    { difficulty:'spicy', category:'nhie', emoji:'💃', text:"Never have I ever done a walk of shame." },
+    // NSFW (10)
+    { difficulty:'nsfw', category:'nhie', emoji:'🔞', text:"Never have I ever sent nudes to someone." },
+    { difficulty:'nsfw', category:'nhie', emoji:'💦', text:"Never have I ever joined the mile high club." },
+    { difficulty:'nsfw', category:'nhie', emoji:'🍑', text:"Never have I ever hooked up in a public place." },
+    { difficulty:'nsfw', category:'nhie', emoji:'😈', text:"Never have I ever had a threesome." },
+    { difficulty:'nsfw', category:'nhie', emoji:'🤫', text:"Never have I ever hooked up with a co-worker." },
+    { difficulty:'nsfw', category:'nhie', emoji:'🔥', text:"Never have I ever filmed myself doing something intimate." },
+    { difficulty:'nsfw', category:'nhie', emoji:'👀', text:"Never have I ever been caught in the act." },
+    { difficulty:'nsfw', category:'nhie', emoji:'👄', text:"Never have I ever hooked up with a friend's ex." },
+    { difficulty:'nsfw', category:'nhie', emoji:'😏', text:"Never have I ever faked it." },
+    { difficulty:'nsfw', category:'nhie', emoji:'📸', text:"Never have I ever had a one-night stand with someone whose name I didn't know." },
+  ];
+
+  // ── WOULD YOU RATHER (40 cards: 10 per difficulty) ──
+  const CARDS_WYR = [
+    // Mild (10)
+    { difficulty:'mild', category:'wyr', emoji:'⚖️', text:"Would you rather always be 10 minutes late or always be 20 minutes early?" },
+    { difficulty:'mild', category:'wyr', emoji:'⚖️', text:"Would you rather lose all of your money or all of your pictures?" },
+    { difficulty:'mild', category:'wyr', emoji:'⚖️', text:"Would you rather have the ability to fly or be invisible?" },
+    { difficulty:'mild', category:'wyr', emoji:'⚖️', text:"Would you rather give up your smartphone or your computer for a month?" },
+    { difficulty:'mild', category:'wyr', emoji:'⚖️', text:"Would you rather live without music or without movies?" },
+    { difficulty:'mild', category:'wyr', emoji:'⚖️', text:"Would you rather have a personal chef or a live-in maid?" },
+    { difficulty:'mild', category:'wyr', emoji:'⚖️', text:"Would you rather be able to talk to animals or speak all human languages?" },
+    { difficulty:'mild', category:'wyr', emoji:'⚖️', text:"Would you rather have free Wi-Fi wherever you go or have a free coffee every day?" },
+    { difficulty:'mild', category:'wyr', emoji:'⚖️', text:"Would you rather travel 100 years into the past or 100 years into the future?" },
+    { difficulty:'mild', category:'wyr', emoji:'⚖️', text:"Would you rather always have to sing instead of speaking or dance instead of walking?" },
+    // Medium (10)
+    { difficulty:'medium', category:'wyr', emoji:'⚖️', text:"Would you rather never eat your favorite food again or only be able to eat your favorite food?" },
+    { difficulty:'medium', category:'wyr', emoji:'⚖️', text:"Would you rather find your true love or find a suitcase with five million dollars?" },
+    { difficulty:'medium', category:'wyr', emoji:'⚖️', text:"Would you rather know exactly when you are going to die or exactly how you are going to die?" },
+    { difficulty:'medium', category:'wyr', emoji:'⚖️', text:"Would you rather have to tell the truth all the time or always have to lie?" },
+    { difficulty:'medium', category:'wyr', emoji:'⚖️', text:"Would you rather have a pause button for your life or a rewind button?" },
+    { difficulty:'medium', category:'wyr', emoji:'⚖️', text:"Would you rather be famous for something terrible or be completely unknown for doing something great?" },
+    { difficulty:'medium', category:'wyr', emoji:'⚖️', text:"Would you rather give up bathing for a month or give up the internet for a month?" },
+    { difficulty:'medium', category:'wyr', emoji:'⚖️', text:"Would you rather have to read aloud every word you read or sing everything you say?" },
+    { difficulty:'medium', category:'wyr', emoji:'⚖️', text:"Would you rather lose the ability to read or lose the ability to speak?" },
+    { difficulty:'medium', category:'wyr', emoji:'⚖️', text:"Would you rather have fingers for toes or toes for fingers?" },
+    // Spicy (10)
+    { difficulty:'spicy', category:'wyr', emoji:'⚖️', text:"Would you rather have your search history made public or your text messages made public?" },
+    { difficulty:'spicy', category:'wyr', emoji:'⚖️', text:"Would you rather accidentally send a spicy text to your boss or your mom?" },
+    { difficulty:'spicy', category:'wyr', emoji:'⚖️', text:"Would you rather find out your partner cheated on you or never find out but they continue to cheat?" },
+    { difficulty:'spicy', category:'wyr', emoji:'⚖️', text:"Would you rather date someone your parents hate or date someone who hates your parents?" },
+    { difficulty:'spicy', category:'wyr', emoji:'⚖️', text:"Would you rather have a partner who is terrible in bed but incredibly wealthy, or amazing in bed but broke?" },
+    { difficulty:'spicy', category:'wyr', emoji:'⚖️', text:"Would you rather catch your parents doing it or have them catch you doing it?" },
+    { difficulty:'spicy', category:'wyr', emoji:'⚖️', text:"Would you rather have to confess your biggest secret to the group right now or chug a full drink?" },
+    { difficulty:'spicy', category:'wyr', emoji:'⚖️', text:"Would you rather date an ex again or date someone who looks exactly like your ex?" },
+    { difficulty:'spicy', category:'wyr', emoji:'⚖️', text:"Would you rather have your partner look through your phone for an hour or your mom?" },
+    { difficulty:'spicy', category:'wyr', emoji:'⚖️', text:"Would you rather drop your phone in the toilet or drop it in a stranger's vomit?" },
+    // NSFW (10)
+    { difficulty:'nsfw', category:'wyr', emoji:'⚖️', text:"Would you rather have a partner with a weird fetish you hate, or have a fetish your partner hates?" },
+    { difficulty:'nsfw', category:'wyr', emoji:'⚖️', text:"Would you rather give up oral sex or give up kissing for the rest of your life?" },
+    { difficulty:'nsfw', category:'wyr', emoji:'⚖️', text:"Would you rather have your boss or your parents find your secret nudes?" },
+    { difficulty:'nsfw', category:'wyr', emoji:'⚖️', text:"Would you rather accidentally call out your ex's name in bed or have your partner call out their ex's name?" },
+    { difficulty:'nsfw', category:'wyr', emoji:'⚖️', text:"Would you rather hook up with someone 20 years older than you or 20 years younger than you (assuming legal age)?" },
+    { difficulty:'nsfw', category:'wyr', emoji:'⚖️', text:"Would you rather have a threesome with your partner and your best friend, or your partner and a stranger?" },
+    { difficulty:'nsfw', category:'wyr', emoji:'⚖️', text:"Would you rather only be able to do it in the dark or only be able to do it with the lights fully on?" },
+    { difficulty:'nsfw', category:'wyr', emoji:'⚖️', text:"Would you rather watch your parents' sex tape or have them watch yours?" },
+    { difficulty:'nsfw', category:'wyr', emoji:'⚖️', text:"Would you rather be caught masturbating by your roommate or by a family member?" },
+    { difficulty:'nsfw', category:'wyr', emoji:'⚖️', text:"Would you rather have an orgasm every time you sneeze or never have an orgasm again?" },
+  ];
+
   const CATEGORY_CSS = {
     counting:    'cat-counting',
     voting:      'cat-voting',
@@ -1574,6 +1782,8 @@
     chug:        'cat-chug',
     shotroule:   'cat-shotroule',
     penalty:     'cat-penalty',
+    nhie:        'cat-nhie',
+    wyr:         'cat-wyr',
   };
   const CATEGORY_LABEL = {
     counting:    'Counting',
@@ -1593,6 +1803,8 @@
     chug:        'Chug',
     shotroule:   'Shot Roulette',
     penalty:     'Penalty',
+    nhie:        'Never Have I Ever',
+    wyr:         'Would You Rather',
   };
 
   // ── STATE ──
@@ -1603,7 +1815,7 @@
   let selectedMode = 'classic';
   let activeCards = CARDS_CLASSIC;
   let customSelected = new Set();
-  const ALL_CARDS = [...CARDS_CLASSIC, ...CARDS_NSFW, ...CARDS_PARTY, ...CARDS_DRINKING];
+  const ALL_CARDS = [...CARDS_CLASSIC, ...CARDS_NSFW, ...CARDS_PARTY, ...CARDS_DRINKING, ...CARDS_NHIE, ...CARDS_WYR];
 
   // ── DOM ──
   const $ = id => document.getElementById(id);
@@ -1626,10 +1838,14 @@
   const modeDrinking   = $('mode-drinking');
   const modeWordmaster = $('mode-wordmaster');
   const modeTod       = $('mode-tod');
+  const modeNhie      = $('mode-nhie');
+  const modeWyr       = $('mode-wyr');
   const modeCustom     = $('mode-custom');
   const nsfwWarning    = $('nsfw-warning');
   const modeStartBtn   = $('mode-start-btn');
   const modeBackBtn    = $('mode-back-btn');
+  const nhieScreen     = $('nhie-screen');
+  const wyrScreen      = $('wyr-screen');
   const builderCounter = $('builder-counter');
   const builderCats    = $('builder-categories');
   const builderBackBtn = $('builder-back-btn');
@@ -1746,8 +1962,8 @@
   });
 
   // ── MODE SELECTION ──
-  const ALL_MODES = ['classic','nsfw','party','drinking','wordmaster','tod','custom'];
-  const MODE_ELS = { classic: modeClassic, nsfw: modeNsfw, party: modeParty, drinking: modeDrinking, wordmaster: modeWordmaster, tod: modeTod, custom: modeCustom };
+  const ALL_MODES = ['classic','nsfw','party','drinking','wordmaster','tod','nhie','wyr','custom'];
+  const MODE_ELS = { classic: modeClassic, nsfw: modeNsfw, party: modeParty, drinking: modeDrinking, wordmaster: modeWordmaster, tod: modeTod, nhie: modeNhie, wyr: modeWyr, custom: modeCustom };
 
   function selectMode(mode) {
     selectedMode = mode;
@@ -1763,6 +1979,8 @@
       drinking:   ['Start Game 🍺', 'drinking-active'],
       wordmaster: ['Start Game 🧠', 'wordmaster-active'],
       tod:        ['Start Game 🎯', 'tod-active'],
+      nhie:       ['Start Game 🤫', 'nhie-active'],
+      wyr:        ['Start Game ⚖️', 'wyr-active'],
       custom:     ['Build Deck 🛠️', 'custom-active'],
     };
     const [label, cls] = btnMap[mode];
@@ -1790,6 +2008,12 @@
     } else if (selectedMode === 'tod') {
       modeScreen.style.display = 'none';
       todScreen.style.display = 'flex';
+    } else if (selectedMode === 'nhie') {
+      modeScreen.style.display = 'none';
+      nhieScreen.style.display = 'flex';
+    } else if (selectedMode === 'wyr') {
+      modeScreen.style.display = 'none';
+      wyrScreen.style.display = 'flex';
     } else {
       startGame();
     }
@@ -2138,6 +2362,48 @@
       currentPlayerEl.textContent = players[todPlayerIdx];
       showTodChoice();
     }
+  });
+
+  // ── NHIE ENGINE ──
+  let nhieDiff = 'mild';
+  nhieScreen.querySelector('.tod-diff-cards').addEventListener('click', (e) => {
+    const card = e.target.closest('.tod-diff-card');
+    if (!card) return;
+    nhieScreen.querySelectorAll('.tod-diff-card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+    nhieDiff = card.dataset.diff;
+  });
+  $('nhie-back-btn').addEventListener('click', () => {
+    nhieScreen.style.display = 'none';
+    modeScreen.style.display = 'flex';
+  });
+  $('nhie-start-btn').addEventListener('click', () => {
+    let pool = CARDS_NHIE.filter(c => c.difficulty === nhieDiff);
+    nhieScreen.style.display = 'none';
+    activeCards = pool;
+    selectedMode = 'nhie';
+    launchGame();
+  });
+
+  // ── WYR ENGINE ──
+  let wyrDiff = 'mild';
+  wyrScreen.querySelector('.tod-diff-cards').addEventListener('click', (e) => {
+    const card = e.target.closest('.tod-diff-card');
+    if (!card) return;
+    wyrScreen.querySelectorAll('.tod-diff-card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+    wyrDiff = card.dataset.diff;
+  });
+  $('wyr-back-btn').addEventListener('click', () => {
+    wyrScreen.style.display = 'none';
+    modeScreen.style.display = 'flex';
+  });
+  $('wyr-start-btn').addEventListener('click', () => {
+    let pool = CARDS_WYR.filter(c => c.difficulty === wyrDiff);
+    wyrScreen.style.display = 'none';
+    activeCards = pool;
+    selectedMode = 'wyr';
+    launchGame();
   });
 
   // ── DRAW ──
