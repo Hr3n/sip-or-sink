@@ -278,6 +278,19 @@
     border-color: var(--lime);
     box-shadow: var(--glow-lime);
   }
+  .mode-card.tod {
+    border-color: rgba(255,74,141,.3);
+  }
+  .mode-card.tod:hover {
+    border-color: var(--pink);
+    box-shadow: 0 0 30px rgba(255,74,141,.4);
+  }
+  .mode-card.tod.selected {
+    border-color: var(--pink);
+    box-shadow: 0 0 30px rgba(255,74,141,.4);
+    background: rgba(255,74,141,.08);
+  }
+
   .mode-card.wordmaster.selected {
     border-color: var(--lime);
     box-shadow: var(--glow-lime);
@@ -318,6 +331,10 @@
     background: linear-gradient(135deg, var(--cyan), var(--mint));
   }
   .btn-mode-start.party-active:hover { box-shadow: var(--glow-cyan); }
+  .btn-mode-start.tod-active {
+    background: linear-gradient(135deg, var(--pink), var(--purple));
+  }
+  .btn-mode-start.tod-active:hover { box-shadow: 0 0 30px rgba(255,74,141,.4); }
   .btn-mode-start.drinking-active {
     background: linear-gradient(135deg, var(--amber), var(--orange));
   }
@@ -855,6 +872,63 @@
   }
   #end-screen p { color: var(--text-dim); }
 
+  /* ── TRUTH OR DARE SCREEN ── */
+  #tod-screen {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.2rem;
+    padding: 1rem 1.5rem 2rem;
+    width: 100%;
+    max-width: 480px;
+  }
+  .tod-diff-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .8rem;
+    width: 100%;
+    max-width: 380px;
+  }
+  .tod-diff-card {
+    background: var(--surface);
+    border: 1.5px solid rgba(255,255,255,.06);
+    border-radius: 14px;
+    padding: 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color .2s, box-shadow .2s, transform .15s;
+  }
+  .tod-diff-card:hover { transform: scale(1.03); }
+  .tod-diff-card.selected { border-color: var(--pink); box-shadow: 0 0 20px rgba(255,74,141,.3); background: rgba(255,74,141,.06); }
+  .tod-diff-card .diff-emoji { font-size: 1.6rem; }
+  .tod-diff-card .diff-title { font-size: .9rem; font-weight: 700; margin-top: .3rem; }
+  .tod-diff-card .diff-desc { font-size: .7rem; color: var(--text-dim); margin-top: .2rem; }
+  .tod-diff-card.full-width { grid-column: 1 / -1; }
+  .tod-choice-btns {
+    display: flex;
+    gap: .8rem;
+    width: 100%;
+    max-width: 360px;
+  }
+  .tod-choice-btn {
+    flex: 1;
+    padding: 1rem;
+    border-radius: 14px;
+    border: none;
+    font-family: inherit;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform .15s, box-shadow .2s;
+    color: #fff;
+  }
+  .tod-choice-btn:hover { transform: scale(1.04); }
+  .tod-choice-btn.truth { background: linear-gradient(135deg, var(--cyan), var(--teal)); }
+  .tod-choice-btn.truth:hover { box-shadow: var(--glow-cyan); }
+  .tod-choice-btn.dare { background: linear-gradient(135deg, var(--pink), var(--red)); }
+  .tod-choice-btn.dare:hover { box-shadow: 0 0 30px rgba(255,74,141,.4); }
+  @keyframes chipIn { from { opacity: 0; transform: scale(.8); } to { opacity: 1; transform: scale(1); } }
+
   /* Utilities */
   .hidden { display: none !important; }
 
@@ -1054,6 +1128,11 @@
       <div class="mode-title">Word Master</div>
       <div class="mode-desc">Gamemaster describes a word. Wrong guesses = everyone sips!</div>
     </div>
+    <div class="mode-card tod" id="mode-tod" tabindex="0">
+      <div class="mode-emoji">🎯</div>
+      <div class="mode-title">Truth or Dare</div>
+      <div class="mode-desc">Classic T or D with 4 spice levels. Pick your heat!</div>
+    </div>
     <div class="mode-card custom" id="mode-custom" tabindex="0">
       <div class="mode-emoji">🛠️</div>
       <div class="mode-title">Custom</div>
@@ -1090,6 +1169,43 @@
     <button class="wm-btn wm-btn-correct" id="wm-correct-btn">✅ Correct!</button>
     <button class="wm-btn wm-btn-next" id="wm-next-btn">🎲 Next Word</button>
     <button class="wm-btn wm-btn-quit" id="wm-quit-btn">← Back to Modes</button>
+  </div>
+</div>
+
+<!-- TRUTH OR DARE -->
+<div id="tod-screen">
+  <h2>🎯 Truth or Dare</h2>
+  <p style="color:var(--text-dim);font-size:.85rem">Pick a difficulty level</p>
+  <div class="tod-diff-cards">
+    <div class="tod-diff-card selected" data-diff="mild">
+      <div class="diff-emoji">😇</div>
+      <div class="diff-title">Mild</div>
+      <div class="diff-desc">Light &amp; fun for everyone</div>
+    </div>
+    <div class="tod-diff-card" data-diff="medium">
+      <div class="diff-emoji">😏</div>
+      <div class="diff-title">Medium</div>
+      <div class="diff-desc">Things get interesting</div>
+    </div>
+    <div class="tod-diff-card" data-diff="spicy">
+      <div class="diff-emoji">🌶️</div>
+      <div class="diff-title">Spicy</div>
+      <div class="diff-desc">Bold moves only</div>
+    </div>
+    <div class="tod-diff-card" data-diff="todnsfw">
+      <div class="diff-emoji">🔞</div>
+      <div class="diff-title">NSFW</div>
+      <div class="diff-desc">Adults only. No mercy.</div>
+    </div>
+    <div class="tod-diff-card full-width" data-diff="todcustom">
+      <div class="diff-emoji">🎨</div>
+      <div class="diff-title">Custom Mix</div>
+      <div class="diff-desc">All 4 difficulties combined</div>
+    </div>
+  </div>
+  <div class="wm-actions">
+    <button class="wm-btn wm-btn-correct" id="tod-start-btn">Let's Go! 🎯</button>
+    <button class="wm-btn wm-btn-quit" id="tod-back-btn">← Back to Modes</button>
   </div>
 </div>
 
@@ -1315,6 +1431,101 @@
     'Avalanche','Lemonade','Starfish','Cucumber','Jackhammer','Sombrero','Catapult',
   ];
 
+  // ── TRUTH OR DARE (80 cards: 20 per difficulty) ──
+  const CARDS_TOD = [
+    // MILD — Truth (10)
+    { difficulty:'mild', type:'truth', emoji:'😇', text:'What is the most embarrassing song on your playlist?' },
+    { difficulty:'mild', type:'truth', emoji:'🎂', text:'What is your guilty pleasure snack at 2am?' },
+    { difficulty:'mild', type:'truth', emoji:'📱', text:'What is the last photo in your camera roll? Describe it.' },
+    { difficulty:'mild', type:'truth', emoji:'🏫', text:'What is the most embarrassing thing that happened to you in school?' },
+    { difficulty:'mild', type:'truth', emoji:'🐶', text:'If you were an animal, what would you be and why?' },
+    { difficulty:'mild', type:'truth', emoji:'🎬', text:'What movie always makes you cry?' },
+    { difficulty:'mild', type:'truth', emoji:'🤥', text:'What is the smallest thing you have ever lied about?' },
+    { difficulty:'mild', type:'truth', emoji:'🍳', text:'What is the worst meal you have ever cooked?' },
+    { difficulty:'mild', type:'truth', emoji:'👻', text:'Are you afraid of the dark? Be honest.' },
+    { difficulty:'mild', type:'truth', emoji:'🎤', text:'What song do you secretly sing in the shower?' },
+    // MILD — Dare (10)
+    { difficulty:'mild', type:'dare', emoji:'💃', text:'Do your best dance move right now. Commit to it!' },
+    { difficulty:'mild', type:'dare', emoji:'🤳', text:'Take a selfie with the silliest face and set it as your profile pic for 10 minutes.' },
+    { difficulty:'mild', type:'dare', emoji:'🎵', text:'Sing the chorus of the last song you listened to.' },
+    { difficulty:'mild', type:'dare', emoji:'🐔', text:'Do a chicken walk across the room.' },
+    { difficulty:'mild', type:'dare', emoji:'📞', text:'Call a friend and tell them you love them without explaining why.' },
+    { difficulty:'mild', type:'dare', emoji:'🧀', text:'Say "cheese" in the most dramatic way possible.' },
+    { difficulty:'mild', type:'dare', emoji:'🤖', text:'Talk like a robot for the next 2 rounds.' },
+    { difficulty:'mild', type:'dare', emoji:'🎭', text:'Do your best impression of a celebrity. Group guesses who.' },
+    { difficulty:'mild', type:'dare', emoji:'🦸', text:'Strike a superhero pose and hold it for 10 seconds.' },
+    { difficulty:'mild', type:'dare', emoji:'🫶', text:'Give a genuine compliment to every player in the room.' },
+
+    // MEDIUM — Truth (10)
+    { difficulty:'medium', type:'truth', emoji:'😏', text:'Who in this room would you want to be stuck on a desert island with?' },
+    { difficulty:'medium', type:'truth', emoji:'💔', text:'What is the pettiest reason you stopped talking to someone?' },
+    { difficulty:'medium', type:'truth', emoji:'🫣', text:'What is something you have never told your best friend?' },
+    { difficulty:'medium', type:'truth', emoji:'📲', text:'Read the last text message you sent out loud.' },
+    { difficulty:'medium', type:'truth', emoji:'🙈', text:'What is the most cringe thing you have done to impress someone?' },
+    { difficulty:'medium', type:'truth', emoji:'🤑', text:'What is the most you have spent on something you regret?' },
+    { difficulty:'medium', type:'truth', emoji:'🍷', text:'What is the drunkest you have ever been? What happened?' },
+    { difficulty:'medium', type:'truth', emoji:'💭', text:'Have you ever stalked someone on social media? Who?' },
+    { difficulty:'medium', type:'truth', emoji:'🤔', text:'What is a secret talent nobody here knows about?' },
+    { difficulty:'medium', type:'truth', emoji:'😬', text:'What is the worst date you have ever been on?' },
+    // MEDIUM — Dare (10)
+    { difficulty:'medium', type:'dare', emoji:'📱', text:'Let someone send one text from your phone. No vetoing!' },
+    { difficulty:'medium', type:'dare', emoji:'🕺', text:'Perform a TikTok dance of the group\\'s choosing.' },
+    { difficulty:'medium', type:'dare', emoji:'🧊', text:'Hold an ice cube in your hand until it melts completely.' },
+    { difficulty:'medium', type:'dare', emoji:'🎤', text:'Rap about the person to your left for 30 seconds.' },
+    { difficulty:'medium', type:'dare', emoji:'📸', text:'Post the most recent ugly photo on your phone to your story for 5 minutes.' },
+    { difficulty:'medium', type:'dare', emoji:'🫡', text:'Do 15 push-ups right now or take 3 sips.' },
+    { difficulty:'medium', type:'dare', emoji:'🤡', text:'Let another player do your makeup with whatever is available.' },
+    { difficulty:'medium', type:'dare', emoji:'🧎', text:'Get on one knee and propose to the player across from you.' },
+    { difficulty:'medium', type:'dare', emoji:'🐍', text:'Slither across the floor like a snake.' },
+    { difficulty:'medium', type:'dare', emoji:'📢', text:'Yell your most embarrassing secret out loud.' },
+
+    // SPICY — Truth (10)
+    { difficulty:'spicy', type:'truth', emoji:'🌶️', text:'Who in this room have you had a crush on? Past or present.' },
+    { difficulty:'spicy', type:'truth', emoji:'🔥', text:'What is the wildest thing on your bucket list?' },
+    { difficulty:'spicy', type:'truth', emoji:'💋', text:'Describe your worst kiss in detail.' },
+    { difficulty:'spicy', type:'truth', emoji:'🫠', text:'What is something that instantly turns you off about a person?' },
+    { difficulty:'spicy', type:'truth', emoji:'🤫', text:'Have you ever been caught doing something you shouldn\\'t? What?' },
+    { difficulty:'spicy', type:'truth', emoji:'💘', text:'Who was the last person you dreamed about romantically?' },
+    { difficulty:'spicy', type:'truth', emoji:'🍸', text:'What is the most regrettable drunk text you have ever sent?' },
+    { difficulty:'spicy', type:'truth', emoji:'😈', text:'What rule have you broken that you are most proud of?' },
+    { difficulty:'spicy', type:'truth', emoji:'👀', text:'If you could read one person\\'s mind in this room, whose would it be?' },
+    { difficulty:'spicy', type:'truth', emoji:'🫢', text:'What is the biggest secret you are keeping right now?' },
+    // SPICY — Dare (10)
+    { difficulty:'spicy', type:'dare', emoji:'💬', text:'Send "I can\\'t stop thinking about you" to your 5th contact. No explanation.' },
+    { difficulty:'spicy', type:'dare', emoji:'🎭', text:'Act out your most embarrassing moment. Full performance.' },
+    { difficulty:'spicy', type:'dare', emoji:'🫦', text:'Whisper something seductive to the player on your right.' },
+    { difficulty:'spicy', type:'dare', emoji:'🎤', text:'Serenade a player of your choice with the cheesiest song you know.' },
+    { difficulty:'spicy', type:'dare', emoji:'👅', text:'Eat a spoonful of hot sauce or take 5 sips.' },
+    { difficulty:'spicy', type:'dare', emoji:'🤝', text:'Swap an item of clothing with the player to your left for 3 rounds.' },
+    { difficulty:'spicy', type:'dare', emoji:'📞', text:'Call your ex and say "I was just thinking about us." Refuse? Chug.' },
+    { difficulty:'spicy', type:'dare', emoji:'💪', text:'Do a plank until the next player finishes their turn.' },
+    { difficulty:'spicy', type:'dare', emoji:'🫡', text:'Let the group pick a word. You must work it into every sentence for 3 rounds.' },
+    { difficulty:'spicy', type:'dare', emoji:'🌡️', text:'Rate everyone in the room from hottest to least hot. Out loud.' },
+
+    // NSFW — Truth (10)
+    { difficulty:'todnsfw', type:'truth', emoji:'🔞', text:'What is the most scandalous photo on your phone right now?' },
+    { difficulty:'todnsfw', type:'truth', emoji:'💀', text:'What is the most unhinged thing you have done while drunk?' },
+    { difficulty:'todnsfw', type:'truth', emoji:'🫣', text:'Have you ever had a fantasy about someone in this room? Who?' },
+    { difficulty:'todnsfw', type:'truth', emoji:'🛏️', text:'What is the weirdest place you have ever hooked up?' },
+    { difficulty:'todnsfw', type:'truth', emoji:'📱', text:'What is the last thirst trap you liked on Instagram? Show it.' },
+    { difficulty:'todnsfw', type:'truth', emoji:'🍑', text:'What is your biggest turn-on that you are embarrassed about?' },
+    { difficulty:'todnsfw', type:'truth', emoji:'🫠', text:'Describe your worst intimate experience without naming anyone.' },
+    { difficulty:'todnsfw', type:'truth', emoji:'💣', text:'What is the most NSFW text you have ever sent? Read it out loud.' },
+    { difficulty:'todnsfw', type:'truth', emoji:'🔥', text:'If you had to kiss someone in this room right now, who?' },
+    { difficulty:'todnsfw', type:'truth', emoji:'👀', text:'What is the most embarrassing thing you have Googled?' },
+    // NSFW — Dare (10)
+    { difficulty:'todnsfw', type:'dare', emoji:'🫦', text:'Give the player to your right a neck massage for 15 seconds.' },
+    { difficulty:'todnsfw', type:'dare', emoji:'💃', text:'Do your most provocative dance move. Group rates it.' },
+    { difficulty:'todnsfw', type:'dare', emoji:'🤳', text:'Take and post a thirst trap selfie right now. Or chug your drink.' },
+    { difficulty:'todnsfw', type:'dare', emoji:'📞', text:'Call your most recent contact and moan their name. Refuse? Chug.' },
+    { difficulty:'todnsfw', type:'dare', emoji:'👄', text:'Kiss your own hand passionately for 10 seconds while maintaining eye contact with someone.' },
+    { difficulty:'todnsfw', type:'dare', emoji:'🎭', text:'Do your best fake orgasm impression. Group votes if it was convincing.' },
+    { difficulty:'todnsfw', type:'dare', emoji:'🕺', text:'Give a 15-second lap dance to a pillow.' },
+    { difficulty:'todnsfw', type:'dare', emoji:'💬', text:'Text your crush "You up?" right now. Show the response when it comes.' },
+    { difficulty:'todnsfw', type:'dare', emoji:'🫡', text:'Remove one article of clothing for the next 3 rounds. Or chug twice.' },
+    { difficulty:'todnsfw', type:'dare', emoji:'🫂', text:'Sit on the lap of the player to your left for the next round.' },
+  ];
+
   const CATEGORY_CSS = {
     counting:    'cat-counting',
     voting:      'cat-voting',
@@ -1384,6 +1595,7 @@
   const modeParty      = $('mode-party');
   const modeDrinking   = $('mode-drinking');
   const modeWordmaster = $('mode-wordmaster');
+  const modeTod       = $('mode-tod');
   const modeCustom     = $('mode-custom');
   const nsfwWarning    = $('nsfw-warning');
   const modeStartBtn   = $('mode-start-btn');
@@ -1412,6 +1624,10 @@
   const wmNextBtn   = $('wm-next-btn');
   const wmQuitBtn   = $('wm-quit-btn');
   const wmWordArea  = $('wm-word-area');
+  // Truth or Dare DOM
+  const todScreen   = $('tod-screen');
+  const todStartBtn = $('tod-start-btn');
+  const todBackBtn  = $('tod-back-btn');
 
   // ── BROWSE DECK MODAL ──
   const CLASSIC_CATS = ['counting','voting','rules','rapidfire'];
@@ -1500,15 +1716,15 @@
   });
 
   // ── MODE SELECTION ──
-  const ALL_MODES = ['classic','nsfw','party','drinking','wordmaster','custom'];
-  const MODE_ELS = { classic: modeClassic, nsfw: modeNsfw, party: modeParty, drinking: modeDrinking, wordmaster: modeWordmaster, custom: modeCustom };
+  const ALL_MODES = ['classic','nsfw','party','drinking','wordmaster','tod','custom'];
+  const MODE_ELS = { classic: modeClassic, nsfw: modeNsfw, party: modeParty, drinking: modeDrinking, wordmaster: modeWordmaster, tod: modeTod, custom: modeCustom };
 
   function selectMode(mode) {
     selectedMode = mode;
     ALL_MODES.forEach(m => MODE_ELS[m].classList.remove('selected'));
     MODE_ELS[mode].classList.add('selected');
     nsfwWarning.style.display = 'none';
-    modeStartBtn.classList.remove('nsfw-active','custom-active','party-active','drinking-active','wordmaster-active');
+    modeStartBtn.classList.remove('nsfw-active','custom-active','party-active','drinking-active','wordmaster-active','tod-active');
 
     const btnMap = {
       classic:    ['Start Game 🎴', ''],
@@ -1516,6 +1732,7 @@
       party:      ['Start Game 🤝', 'party-active'],
       drinking:   ['Start Game 🍺', 'drinking-active'],
       wordmaster: ['Start Game 🧠', 'wordmaster-active'],
+      tod:        ['Start Game 🎯', 'tod-active'],
       custom:     ['Build Deck 🛠️', 'custom-active'],
     };
     const [label, cls] = btnMap[mode];
@@ -1540,6 +1757,9 @@
     } else if (selectedMode === 'wordmaster') {
       modeScreen.style.display = 'none';
       startWordMaster();
+    } else if (selectedMode === 'tod') {
+      modeScreen.style.display = 'none';
+      todScreen.style.display = 'flex';
     } else {
       startGame();
     }
@@ -1741,8 +1961,107 @@
     modeScreen.style.display = 'flex';
   });
 
+  // ── TRUTH OR DARE ENGINE ──
+  let todDiff = 'mild';
+  let todPlayerIdx = 0;
+  let todPool = [];
+
+  // Difficulty card selection
+  todScreen.querySelector('.tod-diff-cards').addEventListener('click', (e) => {
+    const card = e.target.closest('.tod-diff-card');
+    if (!card) return;
+    todScreen.querySelectorAll('.tod-diff-card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+    todDiff = card.dataset.diff;
+  });
+
+  todBackBtn.addEventListener('click', () => {
+    todScreen.style.display = 'none';
+    modeScreen.style.display = 'flex';
+  });
+
+  todStartBtn.addEventListener('click', () => {
+    todPlayerIdx = 0;
+    if (todDiff === 'todcustom') {
+      todPool = shuffleDeck([...CARDS_TOD]);
+    } else {
+      todPool = shuffleDeck(CARDS_TOD.filter(c => c.difficulty === todDiff));
+    }
+    todScreen.style.display = 'none';
+    clearBodyModes();
+    // Show game screen in ToD mode
+    gameScreen.style.display = 'flex';
+    activeCards = todPool;
+    deck = [...todPool];
+    drawnCount = 0;
+    currentPlayerIdx = 0;
+    currentPlayerEl.textContent = players[0];
+    updateProgress();
+    // Show truth/dare choice card
+    showTodChoice();
+  });
+
+  function showTodChoice() {
+    gameCard.className = 'card waiting';
+    gameCard.innerHTML = `
+      <div class="card-emoji">🎯</div>
+      <div class="card-text" style="margin-bottom:.5rem"><strong>${players[todPlayerIdx]}</strong>, choose:</div>
+      <div class="tod-choice-btns">
+        <button class="tod-choice-btn truth" id="tod-truth-btn">🗣️ Truth</button>
+        <button class="tod-choice-btn dare" id="tod-dare-btn">🔥 Dare</button>
+      </div>
+    `;
+    drawBtn.style.display = 'none';
+
+    document.getElementById('tod-truth-btn').addEventListener('click', () => drawTod('truth'));
+    document.getElementById('tod-dare-btn').addEventListener('click', () => drawTod('dare'));
+  }
+
+  function drawTod(type) {
+    const available = todPool.filter(c => c.type === type);
+    if (available.length === 0) { alert('No more cards of that type!'); return; }
+    const idx = Math.floor(Math.random() * available.length);
+    const card = available[idx];
+    todPool.splice(todPool.indexOf(card), 1);
+    drawnCount++;
+
+    drawBtn.style.display = '';
+    drawBtn.textContent = 'Next Player';
+
+    gameCard.classList.remove('enter');
+    void gameCard.offsetWidth;
+    gameCard.className = 'card enter';
+
+    const typeLabel = type === 'truth' ? 'TRUTH' : 'DARE';
+    const typeClass = type === 'truth' ? 'cat-icebreaker' : 'cat-shotroule';
+    gameCard.innerHTML = `
+      <span class="card-category ${typeClass}">${typeLabel}</span>
+      <div class="card-emoji">${card.emoji}</div>
+      <div class="card-text">${card.text}</div>
+    `;
+
+    updateProgress();
+
+    if (todPool.length === 0) {
+      drawBtn.textContent = 'Finish 🎉';
+    }
+  }
+
+  // Override draw button for ToD mode
+  const origDrawClick = drawCard;
+  drawBtn.addEventListener('click', () => {
+    if (selectedMode === 'tod') {
+      if (todPool.length === 0) { showEnd(); return; }
+      todPlayerIdx = (todPlayerIdx + 1) % players.length;
+      currentPlayerIdx = todPlayerIdx;
+      currentPlayerEl.textContent = players[todPlayerIdx];
+      showTodChoice();
+    }
+  });
+
   // ── DRAW ──
   function drawCard() {
+    if (selectedMode === 'tod') return; // ToD has its own flow
     if (deck.length === 0) { showEnd(); return; }
 
     const card = deck.pop();
