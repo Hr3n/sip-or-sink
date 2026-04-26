@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Canasta (Hidden Mode)</title>
+  <style>
+    :root {
+      --bg: #0d0e15;
+      --surface: #1a1b26;
+      --card-bg: #24283b;
+      --purple: #b44aff;
+      --teal: #00d2ff;
+      --red: #ff4a4a;
+      --text: #ffffff;
+      --text-dim: #9aa5ce;
+      --gold: #ffb86c;
+      --radius: 16px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', system-ui, sans-serif;
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      width: 100vw;
+    }
+    button { cursor: pointer; outline: none; border: none; font-family: inherit; }
+    
+    /* Setup Screen */
+    #setup-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      padding: 2rem;
+      text-align: center;
+    }
+    #setup-screen h1 { font-size: 2.5rem; margin-bottom: 1rem; color: var(--gold); }
+    .mode-btn {
+      background: linear-gradient(135deg, var(--purple), var(--teal));
+      color: #fff;
+      padding: 1rem 2rem;
+      border-radius: 12px;
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin: 0.5rem;
+      width: 100%;
+      max-width: 300px;
+    }
+    
+    /* Game Screen */
+    #game-screen {
+      display: none;
+      flex-direction: column;
+      height: 100%;
+      width: 100%;
+    }
+    
+    .top-area, .bottom-area {
+      flex: 1;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .bottom-area { border-bottom: none; border-top: 1px solid rgba(255,255,255,0.05); }
+    
+    .center-area {
+      flex: 0 0 160px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      background: rgba(0,0,0,0.2);
+    }
+
+    .pile {
+      width: 80px;
+      height: 110px;
+      background: rgba(255,255,255,0.05);
+      border: 2px dashed rgba(255,255,255,0.2);
+      border-radius: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.5rem;
+      position: relative;
+    }
+    .pile .card { position: absolute; }
+
+    /* Cards */
+    .card {
+      width: 70px;
+      height: 100px;
+      background: #fff;
+      border-radius: 6px;
+      color: #000;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 5px;
+      font-weight: bold;
+      font-size: 1.2rem;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    .card.red { color: #d32f2f; }
+    .card.black { color: #111; }
+    .card.selected { border-color: var(--teal); transform: translateY(-10px); }
+
+    .card-top { align-self: flex-start; line-height: 1; }
+    .card-center { align-self: center; font-size: 1.8rem; }
+    .card-bottom { align-self: flex-end; line-height: 1; transform: rotate(180deg); }
+
+    .card-back {
+      background: linear-gradient(135deg, var(--purple), var(--teal));
+      color: transparent;
+      border: 2px solid #fff;
+    }
+
+    /* Hands */
+    .hand {
+      display: flex;
+      gap: -40px; /* Overlap */
+      overflow-x: auto;
+      padding: 10px;
+      min-height: 120px;
+    }
+    .hand .card {
+      flex-shrink: 0;
+      margin-right: -40px;
+    }
+
+    /* Melds */
+    .melds {
+      display: flex;
+      gap: 15px;
+      overflow-x: auto;
+      min-height: 80px;
+      padding: 5px;
+    }
+    .meld-group {
+      display: flex;
+      gap: -50px;
+    }
+    .meld-group .card {
+      margin-right: -50px;
+      transform: scale(0.8);
+      transform-origin: top left;
+    }
+
+    .player-info {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
+      font-size: 0.9rem;
+      color: var(--gold);
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      padding: 10px;
+      justify-content: center;
+      background: var(--surface);
+    }
+    .btn {
+      padding: 0.6rem 1rem;
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--text-dim);
+      border-radius: 8px;
+    }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn.primary { background: var(--teal); color: #000; border: none; font-weight: bold; }
+    
+    #status-bar {
+      text-align: center;
+      padding: 5px;
+      background: var(--purple);
+      color: #fff;
+      font-weight: bold;
+    }
+
+  </style>
+</head>
+<body>
+
+<div id="setup-screen">
+  <h1>♠️ Canasta ♥️</h1>
+  <p style="color:var(--text-dim); margin-bottom:2rem;">Welcome to the hidden game.</p>
+  <button class="mode-btn" id="btn-1v1">1v1 against AI</button>
+  <button class="mode-btn" id="btn-2v2">2v2 against AI</button>
+  <button class="btn" style="margin-top:2rem;" onclick="window.location.href='index.html'">← Back to Sip or Sink</button>
+</div>
+
+<div id="game-screen">
+  <div id="status-bar">Starting game...</div>
+  
+  <div class="top-area" id="area-ai">
+    <div class="player-info">
+      <span>Opponent(s)</span>
+      <span id="ai-score">Score: 0</span>
+    </div>
+    <div class="melds" id="ai-melds"></div>
+    <div class="hand" id="ai-hand" style="gap:5px;"></div>
+  </div>
+
+  <div class="center-area">
+    <div class="pile" id="stock-pile">
+      <div class="card card-back"></div>
+      <span id="stock-count" style="position:absolute; bottom:-25px; font-size:0.8rem; color:#fff;">108</span>
+    </div>
+    <div class="pile" id="discard-pile">
+      <span style="color:var(--text-dim); font-size:0.8rem;">Discard</span>
+    </div>
+  </div>
+
+  <div class="bottom-area" id="area-player">
+    <div class="player-info">
+      <span>Your Team</span>
+      <span id="player-score">Score: 0</span>
+    </div>
+    <div class="melds" id="player-melds"></div>
+    <div class="hand" id="player-hand"></div>
+  </div>
+
+  <div class="controls">
+    <button class="btn primary" id="btn-draw" disabled>Draw Stock</button>
+    <button class="btn primary" id="btn-pickup" disabled>Pick Up Pile</button>
+    <button class="btn" id="btn-meld" disabled>Meld Selected</button>
+    <button class="btn" id="btn-discard" disabled>Discard</button>
+  </div>
+</div>
+
+<script>
+  const SUITS = ['hearts', 'diamonds', 'clubs', 'spades'];
+  const RANKS = ['2','3','4','5','6','7','8','9','10','J','Q','K','A'];
+  const VALUES = { 'Joker': 50, '2': 20, 'A': 20, 'K': 10, 'Q': 10, 'J': 10, '10': 10, '9': 10, '8': 10, '7': 5, '6': 5, '5': 5, '4': 5, '3': 5 };
+
+  let deck = [];
+  let discardPile = [];
+  let players = [];
+  let teams = [{ score: 0, melds: {}, red3s: 0, meldedThisRound: false }, { score: 0, melds: {}, red3s: 0, meldedThisRound: false }];
+  let turnIdx = 0;
+  let phase = 'draw'; 
+  let selectedHandCards = new Set();
+  let numP = 2;
+
+  const $ = id => document.getElementById(id);
+
+  function getSuitEmoji(suit) {
+    return { 'hearts': '♥️', 'diamonds': '♦️', 'clubs': '♣️', 'spades': '♠️', 'none': '🃏' }[suit];
+  }
+
+  function generateDeck() {
+    let newDeck = [];
+    for (let d = 0; d < 2; d++) {
+      SUITS.forEach(suit => {
+        RANKS.forEach(rank => {
+          let color = (suit === 'hearts' || suit === 'diamonds') ? 'red' : 'black';
+          newDeck.push({ rank, suit, color, id: `${d}-${suit}-${rank}`, isWild: rank === '2', isRed3: rank === '3' && color === 'red', isBlack3: rank === '3' && color === 'black' });
+        });
+      });
+      newDeck.push({ rank: 'Joker', suit: 'none', color: 'black', id: `${d}-joker1`, isWild: true, isRed3: false, isBlack3: false });
+      newDeck.push({ rank: 'Joker', suit: 'none', color: 'red', id: `${d}-joker2`, isWild: true, isRed3: false, isBlack3: false });
+    }
+    return shuffle(newDeck);
+  }
+
+  function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  $('btn-1v1').addEventListener('click', () => initGame(2));
+  $('btn-2v2').addEventListener('click', () => initGame(4));
+
+  function initGame(numPlayers) {
+    numP = numPlayers;
+    $('setup-screen').style.display = 'none';
+    $('game-screen').style.display = 'flex';
+    $('status-bar').textContent = `Dealing...`;
+    
+    deck = generateDeck();
+    discardPile = [];
+    teams = [{ score: 0, melds: {}, red3s: 0, meldedThisRound: false }, { score: 0, melds: {}, red3s: 0, meldedThisRound: false }];
+    
+    players = [];
+    for (let i=0; i<numP; i++) {
+      players.push({ id: i, isHuman: i===0, team: i%2, hand: [] });
+    }
+
+    const cardsToDeal = numP === 2 ? 15 : 11;
+    for (let c=0; c<cardsToDeal; c++) {
+      for (let i=0; i<numP; i++) {
+        players[i].hand.push(deck.pop());
+      }
+    }
+
+    // Process initial red 3s
+    players.forEach(p => processRed3s(p));
+
+    // Flip top card
+    let top = deck.pop();
+    while (top.isWild || top.isRed3) {
+      discardPile.push(top);
+      top = deck.pop();
+    }
+    discardPile.push(top);
+
+    turnIdx = 0;
+    phase = 'draw';
+    updateUI();
+  }
+
+  function processRed3s(player) {
+    let hasRed3 = true;
+    while(hasRed3) {
+      hasRed3 = false;
+      for (let i = 0; i < player.hand.length; i++) {
+        if (player.hand[i].isRed3) {
+          teams[player.team].red3s++;
+          player.hand.splice(i, 1);
+          player.hand.push(deck.pop());
+          hasRed3 = true;
+          break;
+        }
+      }
+    }
+  }
+
+  function renderCard(c) {
+    if (!c) return '';
+    return `<div class="card ${c.color}">
+      <div class="card-top">${c.rank}</div>
+      <div class="card-center">${getSuitEmoji(c.suit)}</div>
+      <div class="card-bottom">${c.rank}</div>
+    </div>`;
+  }
+
+  function updateUI() {
+    const human = players[0];
+    
+    // Render Human Hand
+    const handEl = $('player-hand');
+    handEl.innerHTML = '';
+    
+    // Sort hand
+    human.hand.sort((a,b) => {
+      if (a.rank === b.rank) return a.suit.localeCompare(b.suit);
+      return a.rank.localeCompare(b.rank);
+    });
+
+    human.hand.forEach((c, i) => {
+      let div = document.createElement('div');
+      div.innerHTML = renderCard(c);
+      let cardEl = div.firstElementChild;
+      if (selectedHandCards.has(c.id)) cardEl.classList.add('selected');
+      cardEl.onclick = () => {
+        if (phase === 'draw' && !selectedHandCards.has(c.id)) return; // Can't select during draw phase
+        if (selectedHandCards.has(c.id)) selectedHandCards.delete(c.id);
+        else selectedHandCards.add(c.id);
+        updateUI();
+      };
+      handEl.appendChild(cardEl);
+    });
+
+    // Render AI Hands (just count)
+    const aiHandEl = $('ai-hand');
+    aiHandEl.innerHTML = '';
+    let totalAiCards = players.filter(p => !p.isHuman).reduce((acc, p) => acc + p.hand.length, 0);
+    for(let i=0; i<Math.min(totalAiCards, 15); i++) {
+      aiHandEl.innerHTML += `<div class="card card-back"></div>`;
+    }
+
+    // Render Piles
+    $('stock-count').textContent = deck.length;
+    const discardEl = $('discard-pile');
+    if (discardPile.length > 0) {
+      discardEl.innerHTML = renderCard(discardPile[discardPile.length - 1]);
+    } else {
+      discardEl.innerHTML = `<span style="color:var(--text-dim); font-size:0.8rem;">Discard</span>`;
+    }
+
+    // Render Melds
+    $('player-score').textContent = `Score: ${teams[0].score} | Red 3s: ${teams[0].red3s}`;
+    $('ai-score').textContent = `Score: ${teams[1].score} | Red 3s: ${teams[1].red3s}`;
+
+    renderTeamMelds(0, $('player-melds'));
+    renderTeamMelds(1, $('ai-melds'));
+
+    // Buttons
+    $('btn-draw').disabled = (turnIdx !== 0 || phase !== 'draw');
+    $('btn-pickup').disabled = (turnIdx !== 0 || phase !== 'draw' || discardPile.length === 0);
+    $('btn-meld').disabled = (turnIdx !== 0 || phase !== 'meld' || selectedHandCards.size < 1);
+    $('btn-discard').disabled = (turnIdx !== 0 || phase !== 'meld' || selectedHandCards.size !== 1);
+
+    if (turnIdx === 0) {
+      $('status-bar').textContent = phase === 'draw' ? 'Your Turn: Draw a card or Pick up the pile.' : 'Your Turn: Meld cards or Discard 1 card to end your turn.';
+    } else {
+      $('status-bar').textContent = `Opponent's Turn...`;
+      if (!$('status-bar').dataset.aiRunning) {
+        $('status-bar').dataset.aiRunning = "true";
+        setTimeout(playAITurn, 1500);
+      }
+    }
+  }
+
+  function renderTeamMelds(teamIdx, container) {
+    container.innerHTML = '';
+    const melds = teams[teamIdx].melds;
+    for (const [rank, cards] of Object.entries(melds)) {
+      let mDiv = document.createElement('div');
+      mDiv.className = 'meld-group';
+      cards.forEach(c => {
+        mDiv.innerHTML += renderCard(c);
+      });
+      container.appendChild(mDiv);
+    }
+  }
+
+  $('btn-draw').addEventListener('click', () => {
+    if (turnIdx !== 0 || phase !== 'draw') return;
+    const p = players[0];
+    p.hand.push(deck.pop());
+    processRed3s(p);
+    phase = 'meld';
+    updateUI();
+  });
+
+  $('btn-pickup').addEventListener('click', () => {
+    if (turnIdx !== 0 || phase !== 'draw' || discardPile.length === 0) return;
+    const top = discardPile[discardPile.length - 1];
+    if (top.isBlack3 || top.isWild) return alert("Cannot pick up a frozen pile or black 3!");
+    
+    // Simplification for MVP: Free pickup if you hold 2 naturals of the same rank.
+    const p = players[0];
+    const naturals = p.hand.filter(c => c.rank === top.rank && !c.isWild);
+    if (naturals.length >= 2) {
+      // Pick up pile
+      p.hand.push(...discardPile);
+      discardPile = [];
+      phase = 'meld';
+      updateUI();
+    } else {
+      alert("You need at least 2 natural cards of rank " + top.rank + " to pick up this pile.");
+    }
+  });
+
+  $('btn-meld').addEventListener('click', () => {
+    if (turnIdx !== 0 || phase !== 'meld') return;
+    const p = players[0];
+    const cardsToMeld = p.hand.filter(c => selectedHandCards.has(c.id));
+    
+    // Group by rank (ignoring wilds)
+    const naturals = cardsToMeld.filter(c => !c.isWild);
+    const wilds = cardsToMeld.filter(c => c.isWild);
+
+    if (naturals.length === 0) {
+      alert("Meld must contain natural cards.");
+      return;
+    }
+
+    const rank = naturals[0].rank;
+    const allSameRank = naturals.every(c => c.rank === rank);
+    if (!allSameRank) {
+      alert("All natural cards in a meld must be the same rank.");
+      return;
+    }
+
+    if (cardsToMeld.length < 3 && !teams[p.team].melds[rank]) {
+      alert("A new meld must have at least 3 cards.");
+      return;
+    }
+
+    // Add to melds
+    if (!teams[p.team].melds[rank]) teams[p.team].melds[rank] = [];
+    teams[p.team].melds[rank].push(...cardsToMeld);
+    
+    // Remove from hand
+    p.hand = p.hand.filter(c => !selectedHandCards.has(c.id));
+    selectedHandCards.clear();
+    updateUI();
+  });
+
+  $('btn-discard').addEventListener('click', () => {
+    if (turnIdx !== 0 || phase !== 'meld' || selectedHandCards.size !== 1) return;
+    const p = players[0];
+    const cardId = Array.from(selectedHandCards)[0];
+    const cardIdx = p.hand.findIndex(c => c.id === cardId);
+    discardPile.push(p.hand[cardIdx]);
+    p.hand.splice(cardIdx, 1);
+    selectedHandCards.clear();
+    
+    endTurn();
+  });
+
+  function endTurn() {
+    if (players[turnIdx].hand.length === 0) {
+      alert("Player went out! Round over.");
+      window.location.reload();
+      return;
+    }
+    turnIdx = (turnIdx + 1) % numP;
+    phase = 'draw';
+    delete $('status-bar').dataset.aiRunning;
+    updateUI();
+  }
+
+  function playAITurn() {
+    const ai = players[turnIdx];
+    // Draw
+    ai.hand.push(deck.pop());
+    processRed3s(ai);
+    
+    // Try to meld pairs + 1 (simplified)
+    const rankCounts = {};
+    ai.hand.forEach(c => {
+      if(!c.isWild) {
+        rankCounts[c.rank] = rankCounts[c.rank] ? rankCounts[c.rank]+1 : 1;
+      }
+    });
+
+    for (const [rank, count] of Object.entries(rankCounts)) {
+      if (count >= 3) {
+        const toMeld = ai.hand.filter(c => c.rank === rank);
+        if (!teams[ai.team].melds[rank]) teams[ai.team].melds[rank] = [];
+        teams[ai.team].melds[rank].push(...toMeld);
+        ai.hand = ai.hand.filter(c => c.rank !== rank);
+      }
+    }
+
+    // Discard random non-wild
+    setTimeout(() => {
+      let discardIdx = ai.hand.findIndex(c => !c.isWild && c.rank !== '3');
+      if (discardIdx === -1) discardIdx = 0; // fallback
+      discardPile.push(ai.hand[discardIdx]);
+      ai.hand.splice(discardIdx, 1);
+      endTurn();
+    }, 1000);
+  }
+</script>
+
+</body>
+</html>

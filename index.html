@@ -1221,7 +1221,7 @@
 <body>
 
 <header>
-  <h1>🍻 Sip or Sink</h1>
+  <h1 id="main-title" style="cursor:pointer; user-select:none; -webkit-tap-highlight-color: transparent;">🍻 Sip or Sink</h1>
   <p>Draw a card. Follow the rules. Try not to sink.</p>
 </header>
 
@@ -2030,6 +2030,21 @@
   const todScreen   = $('tod-screen');
   const todStartBtn = $('tod-start-btn');
   const todBackBtn  = $('tod-back-btn');
+
+  // ── HIDDEN EASTER EGG (CANASTA) ──
+  let titleClicks = 0;
+  let titleClickTimer = null;
+  const mainTitle = $('main-title');
+  if (mainTitle) {
+    mainTitle.addEventListener('click', () => {
+      titleClicks++;
+      clearTimeout(titleClickTimer);
+      if (titleClicks >= 7) {
+        window.location.href = 'canasta.html';
+      }
+      titleClickTimer = setTimeout(() => { titleClicks = 0; }, 2000);
+    });
+  }
 
   // ── BROWSE DECK MODAL ──
   const CLASSIC_CATS = ['counting','voting','rules','rapidfire'];
