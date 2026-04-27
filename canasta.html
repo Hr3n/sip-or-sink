@@ -6,14 +6,11 @@
   <title>Canasta (Hidden Mode)</title>
   <style>
     :root {
-      --bg: #0d0e15;
-      --surface: #1a1b26;
-      --card-bg: #24283b;
-      --purple: #b44aff;
-      --teal: #00d2ff;
-      --red: #ff4a4a;
+      --bg: #006000; /* Green felt */
+      --surface: #004d00; /* Darker green */
+      --card-bg: #fff;
       --text: #ffffff;
-      --text-dim: #9aa5ce;
+      --text-dim: #e0e0e0;
       --gold: #ffb86c;
       --radius: 16px;
     }
@@ -22,7 +19,7 @@
       background-color: var(--bg);
       color: var(--text);
       font-family: 'Inter', system-ui, sans-serif;
-      overflow-x: hidden;
+      overflow: hidden;
       display: flex;
       flex-direction: column;
       height: 100dvh;
@@ -39,10 +36,13 @@
       height: 100%;
       padding: 2rem;
       text-align: center;
+      background: #0d0e15; /* keep setup screen dark */
+      position: absolute;
+      top: 0; left: 0; width: 100%; z-index: 1000;
     }
     #setup-screen h1 { font-size: 2.5rem; margin-bottom: 1rem; color: var(--gold); }
     .mode-btn {
-      background: linear-gradient(135deg, var(--purple), var(--teal));
+      background: linear-gradient(135deg, #b44aff, #00d2ff);
       color: #fff;
       padding: 1rem 2rem;
       border-radius: 12px;
@@ -52,62 +52,120 @@
       width: 100%;
       max-width: 300px;
     }
-    
+    .btn-back { padding: 0.7rem 1.5rem; border-radius: 8px; background: #333; color: #fff;}
+
     /* Game Screen */
     #game-screen {
-      display: none;
-      flex-direction: column;
-      height: 100%;
+      display: none; /* overridden by JS later to grid or flex */
       width: 100%;
-    }
-    
-    .top-area, .bottom-area {
-      flex: 1;
-      padding: 8px;
-      display: flex;
-      flex-direction: column;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
-      min-height: 0; /* important for flex child scrolling */
-    }
-    .bottom-area { border-bottom: none; border-top: 1px solid rgba(255,255,255,0.05); }
-    
-    .center-area {
-      flex: 0 0 auto;
-      padding: 15px 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 15px;
-      background: rgba(0,0,0,0.2);
-    }
-
-    .pile {
-      width: 60px;
-      height: 85px;
-      background: rgba(255,255,255,0.05);
-      border: 2px dashed rgba(255,255,255,0.2);
-      border-radius: 6px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 1.2rem;
+      height: 100%;
       position: relative;
     }
-    .pile .card { position: absolute; }
+    
+    #table-board {
+      display: grid;
+      grid-template-columns: 80px 1fr 80px;
+      grid-template-rows: 90px 1fr 140px;
+      width: 100%;
+      height: 100%;
+      padding: 5px;
+    }
+    
+    .player-zone {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .player-name {
+      font-weight: bold;
+      margin-bottom: 2px;
+      font-size: 0.8rem;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+      background: rgba(0,0,0,0.3);
+      padding: 2px 8px;
+      border-radius: 4px;
+      z-index: 2;
+    }
+    
+    #player-top { grid-column: 2; grid-row: 1; justify-content: flex-start; }
+    #player-bottom { grid-column: 1 / 4; grid-row: 3; justify-content: flex-end; }
+    #player-left { grid-column: 1; grid-row: 2; }
+    #player-right { grid-column: 3; grid-row: 2; }
+    
+    #center-board {
+      grid-column: 2;
+      grid-row: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    
+    .meld-zones {
+      display: flex;
+      width: 100%;
+      gap: 5px;
+      justify-content: center;
+    }
+    .team-meld-zone {
+      flex: 1;
+      max-width: 48%;
+      background: rgba(0,40,0,0.5);
+      border-radius: 8px;
+      padding: 2px;
+      min-height: 80px;
+      display: flex;
+      flex-direction: column;
+    }
+    .team-name {
+      font-weight: bold;
+      font-size: 0.7rem;
+      text-align: center;
+      margin-bottom: 2px;
+      border-bottom: 1px solid rgba(255,255,255,0.2);
+      padding-bottom: 2px;
+    }
+    
+    .piles {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .pile {
+      width: 45px;
+      height: 65px;
+      border-radius: 4px;
+      position: relative;
+    }
+    #stock-pile {
+      box-shadow: 2px 2px 0 #fff, 4px 4px 0 #fff, 6px 6px 0 #fff, 8px 8px 5px rgba(0,0,0,0.5);
+      background: linear-gradient(135deg, #b44aff, #00d2ff);
+      border: 1px solid #fff;
+    }
+    #discard-pile {
+      background: rgba(255,255,255,0.1);
+      border: 1px dashed rgba(255,255,255,0.3);
+    }
+    #discard-pile .card { position: absolute; }
 
     /* Cards */
     .card {
-      width: 60px;
-      height: 85px;
+      width: 45px;
+      height: 65px;
       background: #fff;
-      border-radius: 6px;
+      border-radius: 4px;
       color: #000;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding: 4px;
+      padding: 2px;
       font-weight: bold;
-      font-size: 1rem;
+      font-size: 0.75rem;
       box-shadow: 0 2px 5px rgba(0,0,0,0.4);
       cursor: pointer;
       border: 2px solid transparent;
@@ -117,93 +175,117 @@
     }
     .card.red { color: #d32f2f; }
     .card.black { color: #111; }
-    .card.selected { border-color: var(--teal); transform: translateY(-12px); z-index: 10; }
+    .card.selected { border-color: #00d2ff; transform: translateY(-8px); z-index: 10; }
 
     .card-top { align-self: flex-start; line-height: 1; }
-    .card-center { align-self: center; font-size: 1.4rem; }
+    .card-center { align-self: center; font-size: 1rem; }
     .card-bottom { align-self: flex-end; line-height: 1; transform: rotate(180deg); }
 
     .card-back {
-      background: linear-gradient(135deg, var(--purple), var(--teal));
+      background: linear-gradient(135deg, #b44aff, #00d2ff);
       color: transparent;
-      border: 2px solid #fff;
+      border: 1px solid #fff;
+      width: 100%; height: 100%;
     }
 
     /* Hands */
     .hand {
       display: flex;
-      gap: -25px; /* Overlap */
-      overflow-x: auto;
-      padding: 15px 30px 15px 5px; /* Extra padding right so last card isn't cut off */
-      min-height: 115px;
-      align-items: center;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
     }
-    .hand::-webkit-scrollbar { display: none; } /* hide scrollbar for mobile */
-    .hand .card {
-      flex-shrink: 0;
-      margin-right: -25px;
+    .hand-h {
+      flex-direction: row;
+      gap: -30px;
+      margin-top: 5px;
     }
+    .hand-h .card { margin-right: -30px; }
+    
+    .hand-v {
+      flex-direction: column;
+      gap: -50px;
+    }
+    .hand-v .card { margin-bottom: -50px; transform: rotate(90deg); }
+
+    /* Bottom Player Hand */
+    #hand-bottom {
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 5px;
+      max-width: 65%;
+      margin: 0 auto;
+    }
+    #hand-bottom .card { margin-right: 0; width: 50px; height: 70px;}
 
     /* Melds */
     .melds {
       display: flex;
-      gap: 10px;
-      overflow-x: auto;
-      min-height: 70px;
-      padding: 5px;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
+      flex-wrap: wrap;
+      gap: 2px;
     }
-    .melds::-webkit-scrollbar { display: none; }
     .meld-group {
       display: flex;
-      gap: -40px;
+      gap: -25px;
     }
     .meld-group .card {
-      margin-right: -40px;
-      transform: scale(0.75);
+      margin-right: -25px;
+      transform: scale(0.5);
       transform-origin: top left;
+      margin-bottom: -30px; /* overlap vertically too */
     }
 
-    .player-info {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 5px;
-      font-size: 0.8rem;
-      color: var(--gold);
-      font-weight: 600;
+    /* Score Table */
+    #score-table {
+      position: absolute;
+      bottom: 5px;
+      left: 5px;
+      background: #fff;
+      color: #000;
+      border: 1px solid #000;
+      font-size: 0.65rem;
+      border-collapse: collapse;
+      z-index: 100;
+    }
+    #score-table th, #score-table td {
+      border: 1px solid #000;
+      padding: 1px 3px;
+      text-align: center;
+      font-weight: bold;
     }
 
+    /* Controls */
     .controls {
+      position: absolute;
+      bottom: 5px;
+      right: 5px;
       display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      padding: 10px;
-      justify-content: center;
-      background: var(--surface);
+      flex-direction: column;
+      gap: 3px;
+      z-index: 100;
     }
     .btn {
-      padding: 0.7rem 0.5rem;
-      background: var(--surface);
-      color: var(--text);
-      border: 1px solid var(--text-dim);
-      border-radius: 8px;
-      font-size: 0.85rem;
-      flex: 1 1 45%; /* grow to fill row, max 2 per row */
-      max-width: 200px;
+      padding: 0.4rem 0.5rem;
+      background: #e0e0e0;
+      color: #000;
+      border: 1px solid #999;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: bold;
+      box-shadow: 1px 1px 3px rgba(0,0,0,0.5);
     }
-    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
-    .btn.primary { background: var(--teal); color: #000; border: none; font-weight: bold; }
+    .btn:active { transform: translateY(1px); box-shadow: 0 0 1px rgba(0,0,0,0.5); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
     
     #status-bar {
       text-align: center;
-      padding: 8px 5px;
-      background: var(--purple);
-      color: #fff;
+      padding: 5px 10px;
+      background: #ffff99;
+      color: #000;
+      border: 1px solid #cccc00;
+      border-radius: 4px;
       font-weight: bold;
-      font-size: 0.9rem;
+      font-size: 0.75rem;
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+      max-width: 90%;
     }
 
   </style>
@@ -215,45 +297,85 @@
   <p style="color:var(--text-dim); margin-bottom:2rem;">Welcome to the hidden game.</p>
   <button class="mode-btn" id="btn-1v1">1v1 against AI</button>
   <button class="mode-btn" id="btn-2v2">2v2 against AI</button>
-  <button class="btn" style="margin-top:2rem;" onclick="window.location.href='index.html'">← Back to Sip or Sink</button>
+  <button class="btn-back" style="margin-top:2rem;" onclick="window.location.href='index.html'">← Back to Sip or Sink</button>
 </div>
 
 <div id="game-screen">
-  <div id="status-bar">Starting game...</div>
-  
-  <div class="top-area" id="area-ai">
-    <div class="player-info">
-      <span>Opponent(s)</span>
-      <span id="ai-score">Score: 0</span>
+  <div id="table-board">
+    
+    <!-- Top Player (Partner or AI) -->
+    <div id="player-top" class="player-zone">
+      <div class="player-name" id="name-top">Top Player</div>
+      <div class="hand hand-h" id="hand-top"></div>
     </div>
-    <div class="melds" id="ai-melds"></div>
-    <div class="hand" id="ai-hand" style="gap:5px;"></div>
-  </div>
-
-  <div class="center-area">
-    <div class="pile" id="stock-pile">
-      <div class="card card-back"></div>
-      <span id="stock-count" style="position:absolute; bottom:-25px; font-size:0.8rem; color:#fff;">108</span>
+    
+    <!-- Left Player (Opponent) -->
+    <div id="player-left" class="player-zone">
+      <div class="player-name" id="name-left">Left Player</div>
+      <div class="hand hand-v" id="hand-left"></div>
     </div>
-    <div class="pile" id="discard-pile">
-      <span style="color:var(--text-dim); font-size:0.8rem;">Discard</span>
+    
+    <!-- Right Player (Opponent) -->
+    <div id="player-right" class="player-zone">
+      <div class="player-name" id="name-right">Right Player</div>
+      <div class="hand hand-v" id="hand-right"></div>
     </div>
-  </div>
-
-  <div class="bottom-area" id="area-player">
-    <div class="player-info">
-      <span>Your Team</span>
-      <span id="player-score">Score: 0</span>
+    
+    <!-- Center Board -->
+    <div id="center-board">
+      <div class="meld-zones">
+        <div class="team-meld-zone" id="team0-melds">
+          <div class="team-name" id="name-team0">You & Partner</div>
+          <div class="melds" id="melds-0"></div>
+        </div>
+        <div class="team-meld-zone" id="team1-melds">
+          <div class="team-name" id="name-team1">Opponents</div>
+          <div class="melds" id="melds-1"></div>
+        </div>
+      </div>
+      
+      <div class="piles">
+        <div class="pile" id="stock-pile">
+           <div class="card card-back"></div>
+           <span id="stock-count" style="position:absolute; bottom:-18px; font-size:0.7rem; color:#fff; left:50%; transform:translateX(-50%);">108</span>
+        </div>
+        <div class="pile" id="discard-pile"></div>
+      </div>
+      
+      <div id="status-bar">Starting game...</div>
     </div>
-    <div class="melds" id="player-melds"></div>
-    <div class="hand" id="player-hand"></div>
-  </div>
-
-  <div class="controls">
-    <button class="btn primary" id="btn-draw" disabled>Draw Stock</button>
-    <button class="btn primary" id="btn-pickup" disabled>Pick Up Pile</button>
-    <button class="btn" id="btn-meld" disabled>Meld Selected</button>
-    <button class="btn" id="btn-discard" disabled>Discard</button>
+    
+    <!-- Bottom Player (You) -->
+    <div id="player-bottom" class="player-zone">
+       <div class="player-name" id="name-bottom">You</div>
+       <div class="hand" id="hand-bottom"></div>
+    </div>
+    
+    <!-- UI Overlays -->
+    <table id="score-table">
+      <tr>
+        <th></th>
+        <th id="th-team0">You</th>
+        <th id="th-team1">Opponents</th>
+      </tr>
+      <tr>
+        <td>Score</td>
+        <td id="score-0">0</td>
+        <td id="score-1">0</td>
+      </tr>
+      <tr>
+        <td>Threshold</td>
+        <td id="thresh-0">50</td>
+        <td id="thresh-1">50</td>
+      </tr>
+    </table>
+    
+    <div class="controls" id="bottom-controls">
+      <button class="btn" id="btn-draw" disabled>Draw</button>
+      <button class="btn" id="btn-pickup" disabled>Pick Up</button>
+      <button class="btn" id="btn-meld" disabled>Meld/Lay off</button>
+      <button class="btn" id="btn-discard" disabled>Discard</button>
+    </div>
   </div>
 </div>
 
@@ -367,10 +489,31 @@
   }
 
   function updateUI() {
+    // Hide players depending on numP
+    if (numP === 2) {
+      $('player-left').style.display = 'none';
+      $('player-right').style.display = 'none';
+      $('name-top').textContent = 'Opponent';
+      $('name-team0').textContent = 'You';
+      $('name-team1').textContent = 'Opponent';
+      $('th-team0').textContent = 'You';
+      $('th-team1').textContent = 'Opponent';
+    } else {
+      $('player-left').style.display = 'flex';
+      $('player-right').style.display = 'flex';
+      $('name-top').textContent = 'Partner (Bill)';
+      $('name-left').textContent = 'Opponent (Mike)';
+      $('name-right').textContent = 'Opponent (Lisa)';
+      $('name-team0').textContent = 'You & Bill';
+      $('name-team1').textContent = 'Mike & Lisa';
+      $('th-team0').textContent = 'You & Bill';
+      $('th-team1').textContent = 'Mike & Lisa';
+    }
+
     const human = players[0];
     
     // Render Human Hand
-    const handEl = $('player-hand');
+    const handEl = $('hand-bottom');
     handEl.innerHTML = '';
     
     // Sort hand
@@ -393,29 +536,48 @@
       handEl.appendChild(cardEl);
     });
 
-    // Render AI Hands (just count)
-    const aiHandEl = $('ai-hand');
-    aiHandEl.innerHTML = '';
-    let totalAiCards = players.filter(p => !p.isHuman).reduce((acc, p) => acc + p.hand.length, 0);
-    for(let i=0; i<Math.min(totalAiCards, 15); i++) {
-      aiHandEl.innerHTML += `<div class="card card-back"></div>`;
+    // Render AI Hands
+    const renderAiHand = (player, containerId) => {
+      const container = $(containerId);
+      container.innerHTML = '';
+      if (!player) return;
+      for(let i=0; i < player.hand.length; i++) {
+        container.innerHTML += `<div class="card card-back"></div>`;
+      }
+    };
+
+    if (numP === 2) {
+      renderAiHand(players[1], 'hand-top');
+    } else {
+      renderAiHand(players[1], 'hand-left');
+      renderAiHand(players[2], 'hand-top');
+      renderAiHand(players[3], 'hand-right');
     }
 
     // Render Piles
     $('stock-count').textContent = deck.length;
     const discardEl = $('discard-pile');
+    discardEl.innerHTML = ''; // clear
     if (discardPile.length > 0) {
-      discardEl.innerHTML = renderCard(discardPile[discardPile.length - 1]);
-    } else {
-      discardEl.innerHTML = `<span style="color:var(--text-dim); font-size:0.8rem;">Discard</span>`;
+      // Fan out up to 3 cards for visual effect
+      const start = Math.max(0, discardPile.length - 3);
+      for(let i=start; i<discardPile.length; i++) {
+         let div = document.createElement('div');
+         div.innerHTML = renderCard(discardPile[i]);
+         let cardEl = div.firstElementChild;
+         cardEl.style.position = 'absolute';
+         cardEl.style.top = `${(i - start) * 4}px`;
+         cardEl.style.left = `${(i - start) * 4}px`;
+         discardEl.appendChild(cardEl);
+      }
     }
 
-    // Render Melds
-    $('player-score').textContent = `Score: ${teams[0].score} | Red 3s: ${teams[0].red3s}`;
-    $('ai-score').textContent = `Score: ${teams[1].score} | Red 3s: ${teams[1].red3s}`;
+    // Render Melds & Scores
+    $('score-0').textContent = teams[0].score;
+    $('score-1').textContent = teams[1].score;
 
-    renderTeamMelds(0, $('player-melds'));
-    renderTeamMelds(1, $('ai-melds'));
+    renderTeamMelds(0, $('melds-0'));
+    renderTeamMelds(1, $('melds-1'));
 
     // Buttons
     $('btn-draw').disabled = (turnIdx !== 0 || phase !== 'draw');
@@ -424,9 +586,9 @@
     $('btn-discard').disabled = (turnIdx !== 0 || phase !== 'meld' || selectedHandCards.size !== 1);
 
     if (turnIdx === 0) {
-      $('status-bar').textContent = phase === 'draw' ? 'Your Turn: Draw a card or Pick up the pile.' : 'Your Turn: Meld cards or Discard 1 card to end your turn.';
+      $('status-bar').textContent = phase === 'draw' ? "Your turn. Draw a card or pick up the pile." : "Your turn. Meld cards or Discard 1 card to end your turn.";
     } else {
-      $('status-bar').textContent = `Opponent's Turn...`;
+      $('status-bar').textContent = `Waiting for others to play...`;
       if (!$('status-bar').dataset.aiRunning) {
         $('status-bar').dataset.aiRunning = "true";
         setTimeout(playAITurn, 1500);
