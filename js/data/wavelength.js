@@ -1,0 +1,22 @@
+const CONCEPTS_WL = [
+    ['Hot', 'Cold'],
+    ['Bad', 'Good'],
+    ['Useless', 'Useful'],
+    ['Boring', 'Exciting'],
+    ['Trashy', 'Classy'],
+    ['Underrated', 'Overrated'],
+    ['Cheap', 'Expensive'],
+    ['Smells bad', 'Smells good'],
+    ['Hard to do', 'Easy to do'],
+    ['Sad', 'Happy'],
+    ['Worst superpower', 'Best superpower'],
+    ['Guilty pleasure', 'Respected hobby'],
+    ['Terrible movie', 'Masterpiece'],
+    ['Dry', 'Wet'],
+    ['Needs a remake', 'Perfect as is'],
+    ['Ugly', 'Beautiful'],
+    ['Dangerous', 'Safe'],
+    ['Normal', 'Weird'],
+    ['Snack', 'Meal'],
+    ['Weak', 'Strong']
+  ];
