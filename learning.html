@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Physio Learning</title>
+  <link rel="stylesheet" href="learning.css?v=4">
+</head>
+<body>
+
+  <!-- MODE SELECTION SCREEN -->
+  <div id="mode-selection-screen">
+    <h1 style="color: var(--gold); font-size: 2.5rem; margin-bottom: 0.5rem;">Physio Learning</h1>
+    <p style="color: var(--text-dim); margin-bottom: 1.5rem;">Select a topic to start your session.</p>
+    
+    <div class="mode-grid">
+      <button class="mode-btn" onclick="startMode('Anatomy')">
+        <span class="mode-emoji">🦴</span> Anatomy
+      </button>
+      <button class="mode-btn" onclick="startMode('Pathology')">
+        <span class="mode-emoji">🤒</span> Pathology
+      </button>
+      <button class="mode-btn" onclick="startMode('Kinesiology')">
+        <span class="mode-emoji">🦵</span> Kinesiology
+      </button>
+      <button class="mode-btn" onclick="startMode('Manual Techniques')">
+        <span class="mode-emoji">💆</span> Manual Tech
+      </button>
+      <button class="mode-btn" onclick="startMode('Sports Injuries')">
+        <span class="mode-emoji">🚑</span> Sports Injuries
+      </button>
+      <button class="mode-btn all" onclick="startMode('All')">
+        <span class="mode-emoji">🎓</span> Comprehensive (All)
+      </button>
+    </div>
+    <button class="btn-primary" style="margin-top: 1rem; background: var(--surface-hover); color: var(--text); border-bottom-color: var(--bg);" onclick="window.location.href='canasta.html'">← Back</button>
+  </div>
+
+  <!-- QUIZ SCREEN -->
+  <div id="quiz-screen" class="hidden">
+    <header>
+      <button class="btn-close" id="btn-close" aria-label="Quit">✕</button>
+      <div class="progress-container">
+        <div class="progress-fill" id="progress-bar"></div>
+      </div>
+      <div class="hearts" id="hearts-display">
+        ❤️ 5
+      </div>
+    </header>
+
+    <main id="question-container">
+      <!-- Content injected by JS -->
+    </main>
+
+    <div class="action-bar" id="action-bar">
+      <div class="action-content">
+        <div class="feedback-msg" id="feedback-msg">
+          <h3 id="feedback-title">Awesome!</h3>
+          <p id="feedback-desc">Meaningful explanation goes here.</p>
+        </div>
+        <button class="btn-primary" id="btn-check" disabled>Check</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- UPGRADE KNOWLEDGE HUB SCREEN -->
+  <div id="hub-screen" class="hidden">
+    <h2 style="font-size: 2rem; color: var(--gold);">Upgrade Your Knowledge</h2>
+    <p style="color: var(--text-dim);">Keep your clinical skills sharp with these top resources.</p>
+    
+    <div style="display:flex; flex-direction:column; gap: 1rem;">
+      <a href="https://www.physio-pedia.com/" target="_blank" class="hub-card">
+        <h3>Physiopedia</h3>
+        <p>The universal, constantly updated knowledge repository for physiotherapy.</p>
+      </a>
+      <a href="https://pubmed.ncbi.nlm.nih.gov/" target="_blank" class="hub-card">
+        <h3>PubMed</h3>
+        <p>Search the latest clinical trials, systemic reviews, and medical research.</p>
+      </a>
+      <a href="https://www.medbridgeeducation.com/" target="_blank" class="hub-card">
+        <h3>MedBridge</h3>
+        <p>High-quality online CEUs, patient engagement, and enterprise solutions.</p>
+      </a>
+    </div>
+
+    <button class="btn-primary" style="margin-top: 2rem;" onclick="window.location.href='canasta.html'">Back to Hub</button>
+  </div>
+
+  <!-- End Screen -->
+  <div id="end-screen" class="hidden" style="flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding: 2rem; text-align:center;">
+    <h1 style="color: var(--green); font-size: 3rem; margin-bottom: 1rem;">Session Complete!</h1>
+    <p style="color: var(--text-dim); margin-bottom: 2rem;">You're one step closer to becoming a master clinician.</p>
+    <div style="display:flex; gap: 1rem;">
+      <button class="btn-primary" id="btn-restart">Play Again</button>
+      <button class="btn-primary" style="background:var(--blue); border-bottom-color:var(--blue-shadow);" id="btn-hub">Upgrade Knowledge</button>
+    </div>
+  </div>
+
+  <script src="js/data/physio_data.js?v=4"></script>
+  <script src="js/learning.js?v=4"></script>
+</body>
+</html>
